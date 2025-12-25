@@ -1,0 +1,31 @@
+package org.projects.market.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+import org.projects.market.domain.PaymentMethod;
+import org.projects.market.domain.PaymentOrderStatus;
+
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class PaymentOrder {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    private Long amount;
+    private PaymentOrderStatus status = PaymentOrderStatus.PENDING;
+    private PaymentMethod paymentMethod;
+    private String paymentLinkId;
+
+    @ManyToOne
+    private User user;
+
+    @OneToMany
+    private Set<Order> orders = new HashSet<>();
+}
