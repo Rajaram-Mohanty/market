@@ -18,7 +18,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class CustomerUserServiceImpl implements UserDetailsService {
+public class CustomUserServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final SellerRepository sellerRepository;
@@ -46,7 +46,7 @@ public class CustomerUserServiceImpl implements UserDetailsService {
         if (role == null) role = USER_ROLE.ROLE_COSTUMER;
 
         List<GrantedAuthority> authorityList = new ArrayList<>();
-        authorityList.add(new SimpleGrantedAuthority("ROLE_" + role));
+        authorityList.add(new SimpleGrantedAuthority(role.toString()));
 
         return new org.springframework.security.core.userdetails.User(email, password, authorityList);
     }
