@@ -2,9 +2,9 @@ package org.projects.market.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.projects.market.domain.USER_ROLE;
-import org.projects.market.model.User;
 import org.projects.market.model.VerificationCode;
 import org.projects.market.repository.UserRepository;
+import org.projects.market.request.LoginOtpRequest;
 import org.projects.market.request.LoginRequest;
 import org.projects.market.response.ApiResponse;
 import org.projects.market.response.AuthResponse;
@@ -38,9 +38,10 @@ public class AuthController {
     }
 
     @PostMapping("/sent/login-signup-otp")
-    public ResponseEntity<ApiResponse> sendOtpHandler(@RequestBody VerificationCode req) throws Exception {
+    public ResponseEntity<ApiResponse> sendOtpHandler(@RequestBody LoginOtpRequest req) throws Exception {
 
-        authService.sentLoginOtp(req.getEmail());
+        authService.sentLoginOtp(req.getEmail(),req.getRole());
+
 
         ApiResponse res = new ApiResponse();
 

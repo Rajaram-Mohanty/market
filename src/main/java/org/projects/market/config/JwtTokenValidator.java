@@ -1,6 +1,5 @@
 package org.projects.market.config;
 
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -26,19 +25,19 @@ public class JwtTokenValidator extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String jwt = request.getHeader(JWTConstant.JWT_HEADER); // [03:26:53]
+        String jwt = request.getHeader(JWTConstant.JWT_HEADER);
 
         if (jwt != null && jwt.startsWith("Bearer ")) {
-            jwt = jwt.substring(7); // Remove "Bearer " prefix [03:29:46]
+            jwt = jwt.substring(7);
 
             try {
-                SecretKey key = Keys.hmacShaKeyFor(JWTConstant.SECRET_KEY.getBytes()); // [03:31:42]
+                SecretKey key = Keys.hmacShaKeyFor(JWTConstant.SECRET_KEY.getBytes());
 
                 Claims claims = Jwts.parserBuilder()
                         .setSigningKey(key)
                         .build()
                         .parseClaimsJws(jwt)
-                        .getBody(); // [03:32:48]
+                        .getBody();
 
                 String email = String.valueOf(claims.get("email"));
                 String authorities = String.valueOf(claims.get("authorities"));
@@ -46,12 +45,11 @@ public class JwtTokenValidator extends OncePerRequestFilter {
                 List<GrantedAuthority> auths = AuthorityUtils.commaSeparatedStringToAuthorityList(authorities);
                 Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, auths);
 
-                SecurityContextHolder.getContext().setAuthentication(authentication); // [03:36:33]
-
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
                 throw new BadCredentialsException("Invalid token...");
             }
         }
-        filterChain.doFilter(request, response); // [03:37:29]
+        filterChain.doFilter(request, response);
     }
 }

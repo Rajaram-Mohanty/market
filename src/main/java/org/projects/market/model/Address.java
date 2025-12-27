@@ -15,7 +15,7 @@ import lombok.*;
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     private String Name;
 
@@ -27,7 +27,7 @@ public class Address {
 
     private String state;
 
-    private String pinCode;
+    private String pincode;
 
     private String mobile;
 }

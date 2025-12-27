@@ -18,7 +18,7 @@ import java.util.Set;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)       //@JsonProperty(access = Access.WRITE_ONLY): Creates a one-way door that allows the backend to receive sensitive data (like passwords) from the client while ensuring it is never sent back in the response.
     private String password;

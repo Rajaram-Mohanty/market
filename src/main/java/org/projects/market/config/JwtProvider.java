@@ -42,7 +42,6 @@ public class JwtProvider {
                 .build()
                 .parseClaimsJws(jwt)
                 .getBody();
-
         return String.valueOf(claims.get("email")); // [03:46:42]
     }
 

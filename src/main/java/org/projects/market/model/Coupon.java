@@ -17,7 +17,7 @@ import java.util.Set;
 public class Coupon {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     private String code;
 
@@ -27,7 +27,7 @@ public class Coupon {
 
     private LocalDate validityEndDate;
 
-    private boolean isActive = true;
+    private Boolean isActive = true;
 
     @ManyToMany(mappedBy = "usedCoupons")
     private Set<User> usedByUsers = new HashSet<>();
