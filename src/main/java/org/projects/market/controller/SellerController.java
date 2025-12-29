@@ -2,11 +2,11 @@ package org.projects.market.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.projects.market.domain.AccountStatus;
+import org.projects.market.exceptions.SellerException;
 import org.projects.market.model.Seller;
 import org.projects.market.model.VerificationCode;
 import org.projects.market.repository.VerificationCodeRepository;
 import org.projects.market.request.LoginRequest;
-import org.projects.market.response.ApiResponse;
 import org.projects.market.response.AuthResponse;
 import org.projects.market.service.AuthService;
 import org.projects.market.service.SellerService;
@@ -55,7 +55,7 @@ public class SellerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Seller> getSellerById(@PathVariable Long id) throws Exception {
+    public ResponseEntity<Seller> getSellerById(@PathVariable Long id) throws SellerException {
         Seller seller = sellerService.getSellerById(id);
         return new ResponseEntity<>(seller, HttpStatus.OK);
     }

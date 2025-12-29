@@ -34,7 +34,7 @@ public class JwtProvider {
 
     public String getEmailFromJwtToken(String jwt) {
         if (jwt != null && jwt.startsWith("Bearer ")) {
-            jwt = jwt.substring(7); // [03:46:52]
+            jwt = jwt.substring(7); 
         }
 
         Claims claims = Jwts.parserBuilder()
@@ -42,7 +42,7 @@ public class JwtProvider {
                 .build()
                 .parseClaimsJws(jwt)
                 .getBody();
-        return String.valueOf(claims.get("email")); // [03:46:42]
+        return String.valueOf(claims.get("email")); 
     }
 
     private String populateAuthorities(Collection<? extends GrantedAuthority> collection) {
@@ -50,6 +50,6 @@ public class JwtProvider {
         for (GrantedAuthority authority : collection) {
             auths.add(authority.getAuthority());
         }
-        return String.join(",", auths); // [03:45:18]
+        return String.join(",", auths); 
     }
 }

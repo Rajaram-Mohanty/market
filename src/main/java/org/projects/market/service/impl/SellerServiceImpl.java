@@ -3,6 +3,7 @@ package org.projects.market.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.projects.market.config.JwtProvider;
 import org.projects.market.domain.AccountStatus;
+import org.projects.market.exceptions.SellerException;
 import org.projects.market.model.Address;
 import org.projects.market.model.Seller;
 import org.projects.market.repository.AddressRepository;
@@ -52,9 +53,9 @@ public class SellerServiceImpl implements SellerService {
 
 
     @Override
-    public Seller getSellerById(Long id) throws Exception {
+    public Seller getSellerById(Long id) throws SellerException {
         return sellerRepository.findById(id)
-                .orElseThrow(() -> new Exception("seller not found with id " + id));
+                .orElseThrow(() -> new SellerException("seller not found with id " + id));
     }
 
 
