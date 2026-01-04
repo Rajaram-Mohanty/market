@@ -1,14 +1,17 @@
 package org.projects.market.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.projects.market.config.JwtProvider;
 import org.projects.market.domain.AccountStatus;
 import org.projects.market.exceptions.SellerException;
 import org.projects.market.model.Seller;
+import org.projects.market.model.SellerReport;
 import org.projects.market.model.VerificationCode;
 import org.projects.market.repository.VerificationCodeRepository;
 import org.projects.market.request.LoginRequest;
 import org.projects.market.response.AuthResponse;
 import org.projects.market.service.AuthService;
+import org.projects.market.service.SellerReportService;
 import org.projects.market.service.SellerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +27,9 @@ public class SellerController {
     private final SellerService sellerService;
     private final AuthService authService;
     private final VerificationCodeRepository verificationCodeRepository;
+    private final SellerReportService sellerReportService;
+    private final JwtProvider jwtProvider;
+
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> loginSeller(@RequestBody LoginRequest request) throws Exception {
@@ -64,6 +70,14 @@ public class SellerController {
     public ResponseEntity<Seller> getSellerByJwt(@RequestHeader("Authorization") String jwt) throws Exception {
         Seller seller = sellerService.getSellerProfile(jwt);
         return new ResponseEntity<>(seller, HttpStatus.OK);
+    }
+
+    @GetMapping("/report")
+    public ResponseEntity<SellerReport> getSellerReport(
+            @RequestHeader("Authorization") String jwt) throws Exception {
+        Seller seller = sellerService.getSellerProfile(jwt);
+        SellerReport report = sellerReportService.getSellerReport(seller);
+        return new ResponseEntity<>(report, HttpStatus.OK);
     }
 
     @GetMapping

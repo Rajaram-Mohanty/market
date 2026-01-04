@@ -31,4 +31,6 @@ public class Coupon {
 
     @ManyToMany(mappedBy = "usedCoupons")
     private Set<User> usedByUsers = new HashSet<>();
+
+    private double minimumOrderValue;
 }
