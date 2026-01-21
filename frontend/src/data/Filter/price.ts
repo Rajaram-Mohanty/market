@@ -1,0 +1,8 @@
+export const prices = [
+    { name: "Below ₹499", "min": 0, "max": 499, value: "0-499" },
+    { name: "₹500 - ₹999", "min": 500, "max": 999, value: "500-999" },
+    { name: "₹1000 - ₹1999", "min": 1000, "max": 1999, value: "1000-1999" },
+    { name: "₹2000 - ₹4999", "min": 2000, "max": 4999, value: "2000-4999" },
+    { name: "₹5000 - ₹9999", "min": 5000, "max": 9999, value: "5000-9999" },
+    { name: "₹10000 and above", "min": 10000, "max": null, value: "10000" },
+];
