@@ -1,7 +1,6 @@
 package org.projects.market.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.projects.market.config.JwtProvider;
 import org.projects.market.domain.AccountStatus;
 import org.projects.market.exceptions.SellerException;
 import org.projects.market.model.Seller;
@@ -28,7 +27,6 @@ public class SellerController {
     private final AuthService authService;
     private final VerificationCodeRepository verificationCodeRepository;
     private final SellerReportService sellerReportService;
-    private final JwtProvider jwtProvider;
 
 
     @PostMapping("/login")

@@ -2,8 +2,6 @@ package org.projects.market.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.projects.market.domain.USER_ROLE;
-import org.projects.market.model.VerificationCode;
-import org.projects.market.repository.UserRepository;
 import org.projects.market.request.LoginOtpRequest;
 import org.projects.market.request.LoginRequest;
 import org.projects.market.response.ApiResponse;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserRepository userRepository;
     private final AuthService authService;
 
     @PostMapping("/signup")

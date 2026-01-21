@@ -5,7 +5,6 @@ import org.projects.market.model.Cart;
 import org.projects.market.model.Coupon;
 import org.projects.market.model.User;
 import org.projects.market.response.ApiResponse;
-import org.projects.market.service.CartService;
 import org.projects.market.service.CouponService;
 import org.projects.market.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -22,7 +21,6 @@ public class AdminCouponController {
 
     private final CouponService couponService;
     private final UserService userService;
-    private final CartService cartService;
 
     @PostMapping("/apply")
     public ResponseEntity<Cart> applyCoupon(
