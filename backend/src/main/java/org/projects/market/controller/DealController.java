@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/deals")
@@ -15,12 +17,18 @@ public class DealController {
 
     private final DealService dealService;
 
+    @GetMapping
+    public ResponseEntity<List<Deal>> getDeals() {
+        List<Deal> createdDeal = dealService.getDeals();
+        return new ResponseEntity<>(createdDeal, HttpStatus.CREATED);
+    }
+
+
     @PostMapping
     public ResponseEntity<Deal> createDeal(@RequestBody Deal deal) {
         Deal createdDeal = dealService.createDeal(deal);
         return new ResponseEntity<>(createdDeal, HttpStatus.CREATED);
     }
-
     @PatchMapping("/{id}")
     public ResponseEntity<Deal> updateDeal(
             @PathVariable Long id,

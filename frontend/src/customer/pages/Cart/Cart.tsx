@@ -1,15 +1,24 @@
-import React, { useState } from "react";
-import CartItem from "./CartItem";
+import React, { useEffect, useState } from "react";
+import CartItem from "./CartItemCard";
 import PricingCard from "./PricingCard";
 import { Divider, IconButton, TextField, Button } from "@mui/material";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../../state/store";
+import { fetchUserCart } from "../../../state/customer/cartSlice";
 
 const Cart = () => {
   const [couponCode, setCouponCode] = useState("");
   const [isCouponApplied, setIsCouponApplied] = useState(false);
   const navigate = useNavigate();
+
+  const dispatch = useAppDispatch();
+  const { cart } = useAppSelector((store) => store);
+
+  useEffect(() => {
+    dispatch(fetchUserCart(localStorage.getItem("jwt") || ""));
+  }, []);
 
   const handleCouponChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCouponCode(e.target.value);
@@ -29,9 +38,14 @@ const Cart = () => {
   return (
     <div className="pt-10 px-5 sm:px-10 md:px-44 lg:px-60 min-h-screen">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {cart.error && (
+          <div className="lg:col-span-3 text-center text-red-500 font-semibold p-5">
+            {cart.error}. Please ensure you are logged in.
+          </div>
+        )}
         <div className="lg:col-span-2 space-y-3">
-          {[1, 1, 1].map((item, index) => (
-            <CartItem key={index} />
+          {cart.cart?.cartItems?.map((item) => (
+            <CartItem key={item.id} item={item} />
           ))}
         </div>
 

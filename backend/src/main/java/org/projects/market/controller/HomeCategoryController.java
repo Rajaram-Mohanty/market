@@ -18,7 +18,7 @@ public class HomeCategoryController {
     private final HomeCategoryService homeCategoryService;
     private final HomeService homeService;
 
-    @PostMapping("/admin/home-categories")
+    @PostMapping("/home/categories")
     public ResponseEntity<Home> createHomeCategories(
             @RequestBody List<HomeCategory> homeCategories
     ) {
@@ -27,7 +27,7 @@ public class HomeCategoryController {
         return new ResponseEntity<>(homePageData, HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("/admin/home-categories")
+    @GetMapping("/admin/home-category")
     public ResponseEntity<List<HomeCategory>> getHomeCategories() {
         List<HomeCategory> categories = homeCategoryService.getAllHomeCategories();
         return new ResponseEntity<>(categories, HttpStatus.OK);

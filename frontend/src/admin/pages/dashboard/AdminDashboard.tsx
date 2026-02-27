@@ -1,9 +1,16 @@
-import React from "react";
+import React, { use, useEffect } from "react";
 import AdminDrawerList from "../../components/AdminDrawerList";
 import AdminRoutes from "../../../routes/AdminRoutes";
+import { useAppDispatch } from "../../../state/store";
+import { fetchHomeCategories } from "../../../state/admin/adminSlice";
 
 const AdminDashboard = () => {
     const toggleDrawer = () => {};
+    const dispatch = useAppDispatch()
+
+    useEffect(() => {
+        dispatch(fetchHomeCategories())
+    },[])
 
   return (
     <div className="lg:flex lg:h-[90vh]">

@@ -14,13 +14,15 @@ import java.util.Set;
 public class Cart {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
     private User user;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)    //Important thing and very conceptual. Recommended to remember.
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true) // Important thing and very
+                                                                                   // conceptual. Recommended to
+                                                                                   // remember.
     private Set<CartItem> cartItems = new HashSet<>();
 
     private double totalSellingPrice;
@@ -32,6 +34,5 @@ public class Cart {
     private int discount;
 
     private String couponCode;
-
 
 }

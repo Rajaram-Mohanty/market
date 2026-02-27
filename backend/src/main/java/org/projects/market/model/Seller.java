@@ -14,12 +14,10 @@ import org.projects.market.domain.USER_ROLE;
 public class Seller {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     private String sellerName;
-
 
     private String mobile;
 
@@ -31,10 +29,8 @@ public class Seller {
     @Embedded
     private BusinessDetails businessDetails = new BusinessDetails();
 
-
     @Embedded
     private BankDetails bankDetails = new BankDetails();
-
 
     @OneToOne(cascade = CascadeType.ALL)
     private Address pickupAddress = new Address();
@@ -46,6 +42,5 @@ public class Seller {
     private Boolean isEmailVerified = false;
 
     private AccountStatus accountStatus = AccountStatus.PENDING_VERIFICATION;
-
 
 }

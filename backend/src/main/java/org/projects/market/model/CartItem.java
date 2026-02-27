@@ -1,6 +1,5 @@
 package org.projects.market.model;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,7 +12,7 @@ import lombok.*;
 @EqualsAndHashCode
 public class CartItem {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
@@ -23,7 +22,7 @@ public class CartItem {
     @ManyToOne
     private Product product;
 
-    private  String size;
+    private String size;
 
     private int quantity = 1;
 

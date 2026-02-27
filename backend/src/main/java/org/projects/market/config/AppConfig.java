@@ -40,7 +40,8 @@ public class AppConfig {
             @Override
             public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                 CorsConfiguration cfg = new CorsConfiguration();
-                cfg.setAllowedOrigins(Collections.singletonList("*")); // Allow all for dev [03:18:35]
+                cfg.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+//                cfg.setAllowedOrigins(Collections.singletonList("*"));
                 cfg.setAllowedMethods(Collections.singletonList("*"));
                 cfg.setAllowCredentials(true);
                 cfg.setAllowedHeaders(Collections.singletonList("*"));

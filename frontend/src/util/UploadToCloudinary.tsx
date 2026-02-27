@@ -1,6 +1,11 @@
 export const uploadToCloudinary = async (pics: any) => {
-  const cloud_name = "";
-  const upload_preset = "";
+  const cloud_name = "dt65jsnjj";
+  const upload_preset = "market";
+
+  if (!cloud_name || !upload_preset) {
+    console.log("Cloudinary credentials are missing");
+    return null;
+  }
 
   if (pics) {
     const data = new FormData();
@@ -17,6 +22,10 @@ export const uploadToCloudinary = async (pics: any) => {
     );
 
     const fileData = await res.json();
+    if (fileData.error) {
+      console.log("error : ", fileData.error);
+      return null;
+    }
     return fileData.url.toString();
   } else {
     console.log("error : pic not found");

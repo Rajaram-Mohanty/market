@@ -25,13 +25,14 @@ import { menLevelThree } from "../../../data/category/level-three/menLevelThree"
 import { womenLevelThree } from "../../../data/category/level-three/womenLevelThree";
 import { electronicsLevelThree } from "../../../data/category/level-three/electronicsLevelThree";
 import { homeLevelThree as furnitureLevelThree } from "../../../data/category/level-three/homeLevelThree";
-// import { useAppDispatch } from "../../../state/store";
-// import { createProduct } from "../../../state/seller/sellerProductSlice";
+import { useAppDispatch } from "../../../state/store";
+import { createProduct } from "../../../state/seller/sellerProductSlice";
 
 const AddProductForm = () => {
   const [uploadImage, setUploadImage] = useState(false);
-  // const dispatch = useAppDispatch();
-  const dispatch = (action: any) => console.log(action);
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const dispatch = useAppDispatch();
 
   const formik = useFormik({
     initialValues: {
@@ -47,10 +48,12 @@ const AddProductForm = () => {
       size: "",
     },
     onSubmit: (values) => {
-      // dispatch(createProduct({
-      //   request: values,
-      //   jwt: localStorage.getItem("jwt") || ""
-      // }));
+      dispatch(
+        createProduct({
+          request: values,
+          jwt: localStorage.getItem("jwt") || "",
+        }),
+      );
       console.log("Product Created", values);
     },
   });
@@ -58,9 +61,16 @@ const AddProductForm = () => {
   const handleImageChange = async (e: any) => {
     const file = e.target.files[0];
     setUploadImage(true);
-    const image = await uploadToCloudinary(file);
-    formik.setFieldValue("images", [...formik.values.images, image]);
-    setUploadImage(false);
+    try {
+      const image = await uploadToCloudinary(file);
+      if (image) {
+        formik.setFieldValue("images", [...formik.values.images, image]);
+      }
+    } catch (error) {
+      console.log("Error uploading image:", error);
+    } finally {
+      setUploadImage(false);
+    }
   };
 
   const handleRemoveImage = (index: number) => {

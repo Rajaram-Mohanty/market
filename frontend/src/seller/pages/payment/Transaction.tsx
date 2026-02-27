@@ -6,6 +6,9 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../../../state/store';
+import { fetchTransactionsBySeller } from '../../../state/seller/transactionSlice';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -46,6 +49,14 @@ const rows = [
 ];
 
 export default function TransactionTable() {
+  const dispatch = useAppDispatch();
+  const {transactions} = useAppSelector(store => store)
+
+  useEffect(() => {
+    dispatch(fetchTransactionsBySeller(localStorage.getItem("jwt") || ""));
+  }, []);
+
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -59,14 +70,14 @@ export default function TransactionTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <StyledTableRow key={row.name}>
+          {transactions.transactions.map((item) => (
+            <StyledTableRow key={item.id}>
               <StyledTableCell component="th" scope="row">
-                {row.name}
+                {item.date}
               </StyledTableCell>
-              <StyledTableCell align="right">{row.calories}</StyledTableCell>
-              <StyledTableCell align="right">{row.fat}</StyledTableCell>
-              <StyledTableCell align="right">{row.carbs}</StyledTableCell>
+              <StyledTableCell align="right">{item.customer.email}</StyledTableCell>
+              <StyledTableCell align="right">{item.order.id}</StyledTableCell>
+              <StyledTableCell align="right">{item.order.totalSellingPrice}</StyledTableCell>
             </StyledTableRow>
           ))}
         </TableBody>

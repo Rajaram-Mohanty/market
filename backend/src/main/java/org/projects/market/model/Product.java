@@ -1,6 +1,5 @@
 package org.projects.market.model;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,7 +15,7 @@ import java.util.List;
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;
@@ -33,7 +32,7 @@ public class Product {
 
     private String color;
 
-    @ElementCollection                                //create a separate table for images
+    @ElementCollection // create a separate table for images
     private List<String> images = new ArrayList<>();
 
     private int numRatings;
@@ -48,8 +47,7 @@ public class Product {
 
     private String sizes;
 
-    @OneToMany(mappedBy= "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
-
 
 }

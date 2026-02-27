@@ -16,7 +16,7 @@ import java.util.List;
 public class Review {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -28,15 +28,14 @@ public class Review {
     @ElementCollection
     private List<String> productImages;
 
-   @JsonIgnore
+    @JsonIgnore
     @ManyToOne
     private Product product;
 
     @ManyToOne
     private User user;
 
-    @Column(nullable = false)                     //this annotation can be replaced by @NotNull annotation.
+    @Column(nullable = false) // this annotation can be replaced by @NotNull annotation.
     private LocalDateTime createdAt = LocalDateTime.now();
-
 
 }
