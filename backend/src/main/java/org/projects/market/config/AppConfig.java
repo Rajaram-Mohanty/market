@@ -40,8 +40,9 @@ public class AppConfig {
             @Override
             public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                 CorsConfiguration cfg = new CorsConfiguration();
-                cfg.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
-//                cfg.setAllowedOrigins(Collections.singletonList("*"));
+                cfg.setAllowedOriginPatterns(Collections.singletonList("*"));                    //spring introduced this method to url dynamically in url like "https://*.example.com" where * will be replaced by any domain name. But here what we have written is not recommended for production purpose.
+                // cfg.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));      //this is allowed to use.
+                //cfg.setAllowedOrigins(Collections.singletonList("*"));                      //you cannot use * when you are using allowCredentials(true) because browser dont allow to use * where credentials are allow to pass in header, if used then it will kill the request.
                 cfg.setAllowedMethods(Collections.singletonList("*"));
                 cfg.setAllowCredentials(true);
                 cfg.setAllowedHeaders(Collections.singletonList("*"));
@@ -54,6 +55,6 @@ public class AppConfig {
 
     @Bean
     PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // [03:21:52]
+        return new BCryptPasswordEncoder(); 
     }
 }
