@@ -5,7 +5,10 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import type { CartItem } from "../../../types/cartTypes";
 import { useAppDispatch } from "../../../state/store";
-import { updateCartItem } from "../../../state/customer/cartSlice";
+import {
+  updateCartItem,
+  deleteCartItem,
+} from "../../../state/customer/cartSlice";
 
 const CartItemCard = ({ item }: { item: CartItem }) => {
   const dispatch = useAppDispatch();
@@ -16,6 +19,15 @@ const CartItemCard = ({ item }: { item: CartItem }) => {
         jwt: localStorage.getItem("jwt"),
         cartItemId: item.id,
         cartItem: { quantity: item.quantity + value },
+      }),
+    );
+  };
+
+  const handleRemoveItem = () => {
+    dispatch(
+      deleteCartItem({
+        jwt: localStorage.getItem("jwt") || "",
+        cartItemId: item.id,
       }),
     );
   };
@@ -72,7 +84,7 @@ const CartItemCard = ({ item }: { item: CartItem }) => {
         </div>
       </div>
       <div className="absolute top-1 right-1">
-        <IconButton className="" color="primary">
+        <IconButton onClick={handleRemoveItem} color="primary">
           <CloseIcon />
         </IconButton>
       </div>

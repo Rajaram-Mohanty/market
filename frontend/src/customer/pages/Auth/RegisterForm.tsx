@@ -2,15 +2,19 @@ import { Button, TextField } from "@mui/material";
 import React from "react";
 import { sendLoginSignupOtp } from "../../../state/authSlice";
 import { useFormik } from "formik";
-import { useAppDispatch } from "../../../state/store";
+import { useAppDispatch, useAppSelector } from "../../../state/store";
+import { signup } from "../../../state/authSlice";
 
 const RegisterForm = () => {
   const dispatch = useAppDispatch();
+
+  const { auth } = useAppSelector((store) => store);
 
   const formik = useFormik({
     initialValues: { email: "", otp: "", fullName: "" },
     onSubmit: (values) => {
       console.log("form data", values);
+      dispatch(signup(values));
     },
   });
 
@@ -26,34 +30,33 @@ const RegisterForm = () => {
 
       <div className="space-y-5">
         <div>
-        <TextField
-          fullWidth
-          name="email"
-          label="Email"
-          value={formik.values.email}
-          onChange={formik.handleChange}
-          error={formik.touched.email && Boolean(formik.errors.email)}
-          helperText={formik.touched.email && formik.errors.email}
-        />
+          <TextField
+            fullWidth
+            name="email"
+            label="Email"
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            error={formik.touched.email && Boolean(formik.errors.email)}
+            helperText={formik.touched.email && formik.errors.email}
+          />
         </div>
 
-        {true && 
+        {auth.otpSent && (
           <div className="space-y-5">
             <div className="space-y-2">
-                <p className="font-medium text-sm opacity-60">
-              Enter OTP sent to your email
-            </p>
-            <TextField
-              fullWidth
-              name="otp"
-              label="Enter OTP"
-              value={formik.values.otp}
-              onChange={formik.handleChange}
-              error={formik.touched.otp && Boolean(formik.errors.otp)}
-              helperText={formik.touched.otp && formik.errors.otp}
-            />
+              <p className="font-medium text-sm opacity-60">
+                Enter OTP sent to your email
+              </p>
+              <TextField
+                fullWidth
+                name="otp"
+                label="Enter OTP"
+                value={formik.values.otp}
+                onChange={formik.handleChange}
+                error={formik.touched.otp && Boolean(formik.errors.otp)}
+                helperText={formik.touched.otp && formik.errors.otp}
+              />
             </div>
-            
 
             <TextField
               fullWidth
@@ -65,9 +68,9 @@ const RegisterForm = () => {
               helperText={formik.touched.fullName && formik.errors.fullName}
             />
           </div>
-        }
+        )}
 
-        {false && 
+        {!auth.otpSent && (
           <Button
             fullWidth
             variant="contained"
@@ -76,7 +79,7 @@ const RegisterForm = () => {
           >
             Send OTP
           </Button>
-        }
+        )}
         <Button
           onClick={() => formik.handleSubmit()}
           fullWidth

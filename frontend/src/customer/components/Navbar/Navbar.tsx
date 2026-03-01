@@ -23,7 +23,7 @@ const Navbar = () => {
   const [selectedCategory, setSelectedCategory] = useState("men");
   const [showCategorySheet, setShowCategorySheet] = useState(false);
   const navigate = useNavigate();
-  const {auth} = useAppSelector((store)=>store);
+  const { auth } = useAppSelector((store) => store);
 
   return (
     <div>
@@ -76,10 +76,14 @@ const Navbar = () => {
                   sx={{ width: 29, height: 29 }}
                   src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80"
                 />
-                <h1 className="font-semibold hidden lg:block">{auth.user?.fullName}</h1>
+                <h1 className="font-semibold hidden lg:block">
+                  {auth.user?.fullName}
+                </h1>
               </Button>
             ) : (
-              <Button variant="contained">Login</Button>
+              <Button onClick={() => navigate("/login")} variant="contained">
+                Login
+              </Button>
             )}
 
             <IconButton onClick={() => navigate("/wishlist")}>

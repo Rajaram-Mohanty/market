@@ -17,6 +17,8 @@ import ReviewCard from "../review/ReviewCard";
 import { useAppDispatch, useAppSelector } from "../../../state/store";
 import { useParams } from "react-router-dom";
 import { fetchProductById } from "../../../state/customer/productSlice";
+import { addItemToCart } from "../../../state/customer/cartSlice";
+import { addProductToWishlist } from "../../../state/customer/wishlistSlice";
 
 const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
@@ -31,6 +33,23 @@ const ProductDetails = () => {
 
   const handleActiveImage = (value: number) => {
     setActiveImage(value);
+  };
+
+  const handleAddToCart = () => {
+    dispatch(
+      addItemToCart({
+        jwt: localStorage.getItem("jwt"),
+        request: {
+          productId: Number(productId),
+          quantity: quantity,
+          size: "M",
+        },
+      }),
+    );
+  };
+
+  const handleAddToWishlist = () => {
+    dispatch(addProductToWishlist(Number(productId)));
   };
 
   return (
@@ -125,6 +144,7 @@ const ProductDetails = () => {
               variant="contained"
               startIcon={<AddShoppingCart />}
               sx={{ py: "1rem" }}
+              onClick={handleAddToCart}
             >
               Add to the cart
             </Button>
@@ -134,6 +154,7 @@ const ProductDetails = () => {
               variant="outlined"
               startIcon={<FavoriteBorder />}
               sx={{ py: "1rem" }}
+              onClick={handleAddToWishlist}
             >
               wishlist
             </Button>

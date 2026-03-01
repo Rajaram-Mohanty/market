@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import OrderStepper from "./OrderStepper";
 import { useAppDispatch, useAppSelector } from "../../../state/store";
 import {
+  cancelOrder,
   fetchOrderById,
   fetchOrderItemById,
 } from "../../../state/customer/orderSlice";
@@ -14,6 +15,15 @@ const OrderDetails = () => {
 
   const { orderId, orderItemId } = useParams();
   const { order } = useAppSelector((store) => store);
+
+  const handleCancelOrder = () => {
+    dispatch(
+      cancelOrder({
+        orderId: Number(orderId),
+        jwt: localStorage.getItem("jwt") || "",
+      }),
+    );
+  };
 
   useEffect(() => {
     dispatch(
@@ -105,14 +115,16 @@ const OrderDetails = () => {
 
       <div className="p-10">
         <Button
-          disabled={false}
-          // onClick={handleCancelOrder}
+          disabled={order.currentOrder?.orderStatus === "CANCELLED"}
+          onClick={handleCancelOrder}
           color="error"
           sx={{ py: "0.7rem" }}
           variant="outlined"
           fullWidth
         >
-          {false ? "order cancelled" : "Cancel Order"}
+          {order.currentOrder?.orderStatus === "CANCELLED"
+            ? "Order Cancelled"
+            : "Cancel Order"}
         </Button>
       </div>
     </Box>
