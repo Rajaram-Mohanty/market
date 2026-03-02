@@ -35,3 +35,4 @@ build/
 # Ignore sensitive backend configuration
 backend/src/main/resources/application.properties
 backend/docker-compose.yml
+backend/src/test/
