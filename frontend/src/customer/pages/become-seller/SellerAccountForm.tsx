@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Stepper, Step, StepLabel, Button } from "@mui/material";
 import BecomeSellerFormStep1 from "./BecomeSellerFormStep1";
 import BecomeSellerFormStep2 from "./BecomeSellerFormStep2";

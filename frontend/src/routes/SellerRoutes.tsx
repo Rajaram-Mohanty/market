@@ -1,6 +1,5 @@
 import Dashboard from "../seller/pages/seller-dashboard/Dashboard";
 import Payment from "../seller/pages/payment/Payment";
-import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Products from "../seller/pages/products/Products";
 import AddProduct from "../seller/pages/products/AddProduct";

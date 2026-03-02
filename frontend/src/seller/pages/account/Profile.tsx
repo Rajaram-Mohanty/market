@@ -1,11 +1,5 @@
-import React from 'react'
-
 const Profile = () => {
-  return (
-    <div>
-      
-    </div>
-  )
-}
+  return <div></div>;
+};
 
-export default Profile
+export default Profile;

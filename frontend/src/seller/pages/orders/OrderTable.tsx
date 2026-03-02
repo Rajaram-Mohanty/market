@@ -8,7 +8,10 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { useAppDispatch, useAppSelector } from "../../../state/store";
 import { useEffect, useState } from "react";
-import { fetchSellerOrders, updateOrderStatus } from "../../../state/seller/sellerOrderSlice";
+import {
+  fetchSellerOrders,
+  updateOrderStatus,
+} from "../../../state/seller/sellerOrderSlice";
 import { Button, Menu, MenuItem } from "@mui/material";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -31,24 +34,13 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-
-
-const orderStatusColor = {
-    PENDING: { color: '#FFA500', label: 'PENDING' }, // Orange
-    CONFIRMED: { color: '#F5BCBA', label: 'CONFIRMED' },
-    PLACED: { color: '#F5BCBA', label: 'PLACED' },
-    SHIPPED: { color: '#1E90FF', label: 'SHIPPED' }, // DodgerBlue
-    DELIVERED: { color: '#32CD32', label: 'DELIVERED' }, // LimeGreen
-    CANCELLED: { color: '#FF0000', label: 'CANCELLED' } // Red
-};
-
 const orderStatus = [
-    { color: '#FFA500', label: 'PENDING' },
-    { color: '#F5BCBA', label: 'PLACED' },
-    { color: '#F5BCBA', label: 'CONFIRMED' },
-    { color: '#1E90FF', label: 'SHIPPED' },
-    { color: '#32CD32', label: 'DELIVERED' },
-    { color: '#FF0000', label: 'CANCELLED' },
+  { color: "#FFA500", label: "PENDING" },
+  { color: "#F5BCBA", label: "PLACED" },
+  { color: "#F5BCBA", label: "CONFIRMED" },
+  { color: "#1E90FF", label: "SHIPPED" },
+  { color: "#32CD32", label: "DELIVERED" },
+  { color: "#FF0000", label: "CANCELLED" },
 ];
 
 export default function OrderTable() {
@@ -64,13 +56,19 @@ export default function OrderTable() {
   const handleClick = (event: any, orderId: number) => {
     setAnchorEl((prev: any) => ({ ...prev, [orderId]: event.currentTarget }));
   };
-  const handleClose = (orderId:number) => {
+  const handleClose = (orderId: number) => {
     setAnchorEl((prev: any) => ({ ...prev, [orderId]: null }));
   };
 
-  const handleUpdateOrderStatus = (orderId:number, orderStatus:any) => {
-    dispatch(updateOrderStatus({ jwt: localStorage.getItem("jwt") || "", orderId, orderStatus})); 
-  }
+  const handleUpdateOrderStatus = (orderId: number, orderStatus: any) => {
+    dispatch(
+      updateOrderStatus({
+        jwt: localStorage.getItem("jwt") || "",
+        orderId,
+        orderStatus,
+      }),
+    );
+  };
 
   return (
     <TableContainer component={Paper}>
@@ -132,8 +130,8 @@ export default function OrderTable() {
               <StyledTableCell align="right">
                 <div>
                   <Button
-                    size='small' 
-                    color='primary'
+                    size="small"
+                    color="primary"
                     id="basic-button"
                     aria-controls={open ? "basic-menu" : undefined}
                     aria-haspopup="true"
@@ -154,9 +152,15 @@ export default function OrderTable() {
                     }}
                   >
                     {orderStatus.map((status) => (
-                      <MenuItem key={status.label} onClick={() => handleUpdateOrderStatus(item.id, status.label)}>{status.label}</MenuItem>
+                      <MenuItem
+                        key={status.label}
+                        onClick={() =>
+                          handleUpdateOrderStatus(item.id, status.label)
+                        }
+                      >
+                        {status.label}
+                      </MenuItem>
                     ))}
-                    
                   </Menu>
                 </div>
               </StyledTableCell>

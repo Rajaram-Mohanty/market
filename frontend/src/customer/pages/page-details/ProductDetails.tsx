@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import StarIcon from "@mui/icons-material/Star";
 import { teal } from "@mui/material/colors";
 import { Button, Divider } from "@mui/material";
@@ -76,7 +76,9 @@ const ProductDetails = () => {
           </div>
         </section>
         <section className="text-lg">
-          <h1 className="text-primary-color font-bold">{product.product?.seller?.businessDetails.businessName}</h1>
+          <h1 className="text-primary-color font-bold">
+            {product.product?.seller?.businessDetails.businessName}
+          </h1>
           <p className="text-gray-500 font-semibold">
             {product.product?.title}
           </p>
@@ -85,7 +87,7 @@ const ProductDetails = () => {
               <span>4</span>
               <StarIcon sx={{ color: teal[500], fontSize: "20px" }} />
             </div>
-            <Divider orientation="vertical" flexItem/>
+            <Divider orientation="vertical" flexItem />
             <span>234 Ratings</span>
           </div>
 
@@ -95,13 +97,15 @@ const ProductDetails = () => {
                 ₹ {product.product?.sellingPrice}
               </span>
               <span className="line-through text-grey-500 opacity-50">
-              ₹ {product.product?.mrpPrice}
-            </span>
-            <span className="text-primary-color font-semibold">
-              {product.product?.discountPercent}% off
-            </span>
+                ₹ {product.product?.mrpPrice}
+              </span>
+              <span className="text-primary-color font-semibold">
+                {product.product?.discountPercent}% off
+              </span>
             </div>
-            <div><p>Inclusive of all taxes . Free shipping above ₹1500 </p></div>
+            <div>
+              <p>Inclusive of all taxes . Free shipping above ₹1500 </p>
+            </div>
           </div>
 
           <div className="mt-7 space-y-3">

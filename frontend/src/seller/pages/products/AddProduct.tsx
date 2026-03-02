@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -10,7 +10,6 @@ import {
   MenuItem,
   Select,
   TextField,
-  Typography,
 } from "@mui/material";
 import { useFormik } from "formik";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
@@ -31,7 +30,6 @@ import { createProduct } from "../../../state/seller/sellerProductSlice";
 const AddProductForm = () => {
   const [uploadImage, setUploadImage] = useState(false);
 
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const dispatch = useAppDispatch();
 
   const formik = useFormik({

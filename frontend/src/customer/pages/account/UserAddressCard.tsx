@@ -1,5 +1,3 @@
-import React from "react";
-
 const UserAddressCard = () => {
   return (
     <div className="p-5 border rounded-md flex">

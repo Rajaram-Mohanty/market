@@ -1,13 +1,12 @@
-import React from 'react'
-import ProductTable from './ProductTable';
+import ProductTable from "./ProductTable";
 
 const Products = () => {
   return (
     <div>
-      <h1 className='font-bold  text-xl'>All Products</h1>
+      <h1 className="font-bold  text-xl">All Products</h1>
       <ProductTable />
     </div>
-  )
-}
+  );
+};
 
-export default Products
+export default Products;

@@ -1,4 +1,3 @@
-import React from "react";
 import type { Product } from "../../types/productTypes";
 import { useAppDispatch } from "../../state/store";
 import { Close } from "@mui/icons-material";
@@ -6,15 +5,13 @@ import { teal } from "@mui/material/colors";
 import { addProductToWishlist } from "../../state/customer/wishlistSlice";
 
 const WishlistProductCard = ({ item }: { item: Product }) => {
+  const dispatch = useAppDispatch();
 
-
-    const dispatch = useAppDispatch();
-
-    const handleRemoveFromWishlist = (e:any) => {                  // Uses addProductToWishlist because the backend toggles (adds/removes) the item.                                                                    
-        e.stopPropagation();                                       // stopPropagation prevents the click from triggering parent card events.
-        item.id && dispatch(addProductToWishlist(item.id));
-      };
-
+  const handleRemoveFromWishlist = (e: any) => {
+    // Uses addProductToWishlist because the backend toggles (adds/removes) the item.
+    e.stopPropagation(); // stopPropagation prevents the click from triggering parent card events.
+    item.id && dispatch(addProductToWishlist(item.id));
+  };
 
   return (
     <div className="w-60 relative">
@@ -38,7 +35,10 @@ const WishlistProductCard = ({ item }: { item: Product }) => {
 
       <div className="absolute top-1 right-1">
         <button onClick={handleRemoveFromWishlist}>
-          <Close className="cursor-pointer bg-white rounded-full p-1" sx={{color:teal[500], fontSize:"2rem"}}/>
+          <Close
+            className="cursor-pointer bg-white rounded-full p-1"
+            sx={{ color: teal[500], fontSize: "2rem" }}
+          />
         </button>
       </div>
     </div>

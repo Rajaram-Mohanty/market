@@ -11,7 +11,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import Button from "@mui/material/Button";
 import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
 import { AddShoppingCart } from "@mui/icons-material";
-import StoreFront from "@mui/icons-material/StoreFront";
+import Storefront from "@mui/icons-material/Storefront";
 import CategorySheet from "./CategorySheet";
 import { mainCategory } from "../../../data/category/mainCategory";
 import { useNavigate } from "react-router-dom";
@@ -99,7 +99,7 @@ const Navbar = () => {
             {isLarge && (
               <Button
                 onClick={() => navigate("/become-seller")}
-                startIcon={<StoreFront />}
+                startIcon={<Storefront />}
                 variant="outlined"
               >
                 Become Seller

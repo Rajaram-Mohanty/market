@@ -1,4 +1,3 @@
-import React from "react";
 import { Card, Divider, Button } from "@mui/material";
 import TransactionTable from "./Transaction";
 

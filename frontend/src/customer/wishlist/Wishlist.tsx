@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import WishlistProductCard from "./WishlistProductCard";
 import { getWishlistByUserId } from "../../state/customer/wishlistSlice";
 import { useAppDispatch, useAppSelector } from "../../state/store";
 
 const Wishlist = () => {
   const dispatch = useAppDispatch();
-  const {wishlist} = useAppSelector((state)=>state) 
+  const { wishlist } = useAppSelector((state) => state);
 
   useEffect(() => {
     dispatch(getWishlistByUserId());

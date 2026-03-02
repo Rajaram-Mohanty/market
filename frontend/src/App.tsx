@@ -16,7 +16,7 @@ import { useAppDispatch, useAppSelector } from "./state/store";
 import { useEffect } from "react";
 import { fetchSellerProfile } from "./state/seller/sellerSlice";
 import { fetchUserProfile } from "./state/authSlice";
-import Auth from "./customer/pages/Auth/Auth";
+import Auth from "./customer/pages/auth/Auth";
 import PaymentSucess from "./customer/pages/PaymentSucess";
 import Wishlist from "./customer/wishlist/Wishlist";
 import { createHomeCategories } from "./state/customer/customerSlice";

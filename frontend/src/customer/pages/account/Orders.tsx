@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../state/store";
 import { fetchUserOrderHistory } from "../../../state/customer/orderSlice";
 import OrderItemCard from "./OrderItemCard";
 
 const Orders = () => {
   const dispatch = useAppDispatch();
-  const {order} = useAppSelector(store=>store)
+  const { order } = useAppSelector((store) => store);
 
   useEffect(() => {
     dispatch(fetchUserOrderHistory(localStorage.getItem("jwt") || ""));
@@ -18,7 +18,11 @@ const Orders = () => {
         <p>from anytime</p>
       </div>
       <div className="space-y-2">
-        {order.orders.map((order) => order.orderItems?.map((item)=><OrderItemCard order={order} item={item} />))}
+        {order.orders.map((order) =>
+          order.orderItems?.map((item) => (
+            <OrderItemCard order={order} item={item} />
+          )),
+        )}
       </div>
     </div>
   );
