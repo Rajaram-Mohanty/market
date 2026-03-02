@@ -8,8 +8,9 @@ export const sendLoginSignupOtp = createAsyncThunk(
     try {
       const response = await api.post("/auth/sent/login-signup-otp", { email });
       console.log("login otp response", response);
-    } catch (error) {
+    } catch (error: any) {
       console.log("error ---", error);
+      return rejectWithValue(error.response?.data || "Failed to send OTP");
     }
   },
 );
@@ -21,8 +22,9 @@ export const signIn = createAsyncThunk<any, any>(
       console.log("signIn response", response.data);
       localStorage.setItem("jwt", response.data.jwt);
       return response.data.jwt;
-    } catch (error) {
+    } catch (error: any) {
       console.log("error ---", error);
+      return rejectWithValue(error.response?.data || "Failed to sign in");
     }
   },
 );
@@ -35,8 +37,9 @@ export const signup = createAsyncThunk<any, any>(
       console.log("signup response", response.data);
       localStorage.setItem("jwt", response.data.jwt);
       return response.data.jwt;
-    } catch (error) {
+    } catch (error: any) {
       console.log("error ---", error);
+      return rejectWithValue(error.response?.data || "Failed to sign up");
     }
   },
 );
@@ -48,8 +51,9 @@ export const logout = createAsyncThunk<any, any>(
       localStorage.clear();
       console.log("logout successfully");
       navigate("/");
-    } catch (error) {
+    } catch (error: any) {
       console.log("error ---", error);
+      return rejectWithValue(error.response?.data || "Failed to log out");
     }
   },
 );
@@ -65,8 +69,11 @@ export const fetchUserProfile = createAsyncThunk<any, any>(
       });
       console.log("user profile", response.data);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.log("error ---", error);
+      return rejectWithValue(
+        error.response?.data || "Failed to fetch user profile",
+      );
     }
   },
 );
@@ -76,15 +83,15 @@ const initialState: AuthState = {
   otpSent: false,
   isLoggedIn: false,
   user: null,
-  loading:false
+  loading: false,
 };
 
 interface AuthState {
   jwt: string | null;
   otpSent: boolean;
   isLoggedIn: boolean;
-  user: User|null;
-  loading:boolean
+  user: User | null;
+  loading: boolean;
 }
 
 const authSlice = createSlice({
@@ -92,15 +99,14 @@ const authSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-
     builder.addCase(sendLoginSignupOtp.pending, (state) => {
       state.loading = true;
     });
-    builder.addCase(sendLoginSignupOtp.fulfilled, (state, action) => {
+    builder.addCase(sendLoginSignupOtp.fulfilled, (state) => {
       state.loading = false;
       state.otpSent = true;
     });
-    builder.addCase(sendLoginSignupOtp.rejected, (state, action) => {
+    builder.addCase(sendLoginSignupOtp.rejected, (state) => {
       state.loading = false;
     });
 
@@ -116,7 +122,7 @@ const authSlice = createSlice({
       state.user = action.payload;
       state.isLoggedIn = true;
     });
-    builder.addCase(logout.fulfilled, (state, action) => {
+    builder.addCase(logout.fulfilled, (state) => {
       state.jwt = null;
       state.isLoggedIn = false;
       state.user = null;

@@ -1,8 +1,15 @@
-import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 import type { Cart, CartItem } from "../../types/cartTypes";
 import { api } from "../../config/api";
-import { sumCartItemMrpPrice, sumCartItemSellingPrice } from "../../util/sumCartItemMrpPrice";
-import type { RootState } from "../store";
+import {
+  sumCartItemMrpPrice,
+  sumCartItemSellingPrice,
+} from "../../util/sumCartItemMrpPrice";
+
 import { applyCoupon } from "./couponSlice";
 
 interface CartState {
@@ -133,33 +140,38 @@ const cartSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      
+
       .addCase(addItemToCart.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(addItemToCart.fulfilled, (state, action: PayloadAction<CartItem>) => {
-        if(state.cart){
-          state.cart.cartItems.push(action.payload);
-        }
-        state.loading = false;
-      })
+      .addCase(
+        addItemToCart.fulfilled,
+        (state, action: PayloadAction<CartItem>) => {
+          if (state.cart) {
+            state.cart.cartItems.push(action.payload);
+          }
+          state.loading = false;
+        },
+      )
       .addCase(addItemToCart.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
-      
+
       .addCase(deleteCartItem.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(deleteCartItem.fulfilled, (state, action) => {
-        if(state.cart){
+        if (state.cart) {
           state.cart.cartItems = state.cart.cartItems.filter(
             (item: CartItem) => item.id !== action.meta.arg.cartItemId,
           );
           const mrpPrice = sumCartItemMrpPrice(state.cart.cartItems || []);
-          const sellingPrice = sumCartItemSellingPrice(state.cart.cartItems || []);
+          const sellingPrice = sumCartItemSellingPrice(
+            state.cart.cartItems || [],
+          );
           state.cart.totalMrpPrice = mrpPrice;
           state.cart.totalSellingPrice = sellingPrice;
         }
@@ -196,11 +208,9 @@ const cartSlice = createSlice({
       .addCase(applyCoupon.fulfilled, (state, action) => {
         state.cart = action.payload;
         state.loading = false;
-      })
+      });
   },
 });
 
 export const { resetCartState } = cartSlice.actions;
 export default cartSlice.reducer;
-
-
