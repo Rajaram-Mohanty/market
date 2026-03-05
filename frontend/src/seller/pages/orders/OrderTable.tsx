@@ -75,28 +75,28 @@ export default function OrderTable() {
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
         <TableHead>
           <TableRow>
-            <StyledTableCell>Order ID</StyledTableCell>
-            <StyledTableCell align="right">Products</StyledTableCell>
-            <StyledTableCell align="right">Shipping Address</StyledTableCell>
-            <StyledTableCell align="right">Order Status</StyledTableCell>
-            <StyledTableCell align="right">Update</StyledTableCell>
+            <StyledTableCell align="center">Order ID</StyledTableCell>
+            <StyledTableCell align="center">Products</StyledTableCell>
+            <StyledTableCell align="center">Shipping Address</StyledTableCell>
+            <StyledTableCell align="center">Order Status</StyledTableCell>
+            <StyledTableCell align="center">Update</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {sellerOrder.orders?.map((item) => (
             <StyledTableRow key={item.id}>
-              <StyledTableCell component="th" scope="item">
+              <StyledTableCell align="center" component="th" scope="item">
                 {item.id}
               </StyledTableCell>
-              <StyledTableCell>
-                <div className="flex gap-1 flex-wrap">
+              <StyledTableCell align="center">
+                <div className="flex gap-1 flex-wrap justify-center">
                   {item.orderItems.map((orderItem) => (
                     <div key={orderItem.id} className="flex gap-2">
                       <img
                         className="w-20 rounded-md"
                         src={orderItem.product.images[0]}
                       />
-                      <div className="flex flex-col justify-between py-2">
+                      <div className="flex flex-col justify-between py-2 text-left">
                         <h1>{orderItem.product.title}</h1>
                         <h1>{orderItem.product.sellingPrice}</h1>
                         <h1>{orderItem.product.color}</h1>
@@ -105,7 +105,7 @@ export default function OrderTable() {
                   ))}
                 </div>
               </StyledTableCell>
-              <StyledTableCell align="right">
+              <StyledTableCell align="center">
                 <div className="flex flex-col gap-y-2">
                   <h1>{item.shippingAddress.name}</h1>
                   <h1>
@@ -122,12 +122,12 @@ export default function OrderTable() {
                   </h1>
                 </div>
               </StyledTableCell>
-              <StyledTableCell align="right">
+              <StyledTableCell align="center">
                 <span className="px-5 py-2 border rounded-full text-primary-color border-primary-color">
                   {item.orderStatus}
                 </span>
               </StyledTableCell>
-              <StyledTableCell align="right">
+              <StyledTableCell align="center">
                 <div>
                   <Button
                     size="small"

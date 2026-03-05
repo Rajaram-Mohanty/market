@@ -6,11 +6,12 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { Button } from "@mui/material";
-import { Delete, Edit } from "@mui/icons-material";
+import { Button, IconButton } from "@mui/material";
+import { Edit } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../../state/store";
 import { useEffect } from "react";
 import { getAllDeals } from "../../../state/admin/dealSlice";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -63,38 +64,42 @@ export default function DealTable() {
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
         <TableHead>
           <TableRow>
-            <StyledTableCell>No.</StyledTableCell>
-            <StyledTableCell align="right">Image</StyledTableCell>
-            <StyledTableCell align="right">Category</StyledTableCell>
-            <StyledTableCell align="right">Discount</StyledTableCell>
-            <StyledTableCell align="right">Edit</StyledTableCell>
-            <StyledTableCell align="right">Delete</StyledTableCell>
+            <StyledTableCell align="center">No.</StyledTableCell>
+            <StyledTableCell align="center">Image</StyledTableCell>
+            <StyledTableCell align="center">Category</StyledTableCell>
+            <StyledTableCell align="center">Discount</StyledTableCell>
+            <StyledTableCell align="center">Edit</StyledTableCell>
+            <StyledTableCell align="center">Delete</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {deal.deals.map((item, index) => (
             <StyledTableRow key={item.id}>
-              <StyledTableCell component="th" scope="row">
+              <StyledTableCell align="center" component="th" scope="row">
                 {index + 1}
               </StyledTableCell>
-              <StyledTableCell>
-                <img
-                  className="w-20 rounded-md"
-                  src={item.category.image}
-                  alt=""
-                />
+              <StyledTableCell align="center">
+                <div className="flex justify-center">
+                  <img
+                    className="w-20 rounded-md"
+                    src={item.category.image}
+                    alt=""
+                  />
+                </div>
               </StyledTableCell>
-              <StyledTableCell>{item.category.categoryId}</StyledTableCell>
-              <StyledTableCell align="right">{item.discount}</StyledTableCell>
-              <StyledTableCell align="right">
+              <StyledTableCell align="center">
+                {item.category.categoryId}
+              </StyledTableCell>
+              <StyledTableCell align="center">{item.discount}</StyledTableCell>
+              <StyledTableCell align="center">
                 <Button>
                   <Edit />
                 </Button>
               </StyledTableCell>
-              <StyledTableCell align="right">
-                <Button>
-                  <Delete />
-                </Button>
+              <StyledTableCell align="center">
+                <IconButton>
+                  <DeleteIcon sx={{ color: "red" }} />
+                </IconButton>
               </StyledTableCell>
             </StyledTableRow>
           ))}

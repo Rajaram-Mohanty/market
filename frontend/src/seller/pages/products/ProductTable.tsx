@@ -46,35 +46,35 @@ export default function ProductTable() {
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
         <TableHead>
           <TableRow>
-            <StyledTableCell>Images</StyledTableCell>
-            <StyledTableCell align="right">Product Title</StyledTableCell>
-            <StyledTableCell align="right">MRP</StyledTableCell>
-            <StyledTableCell align="right">Selling Price</StyledTableCell>
-            <StyledTableCell align="right">Color</StyledTableCell>
-            <StyledTableCell align="right">Update Stock</StyledTableCell>
-            <StyledTableCell align="right">Update</StyledTableCell>
+            <StyledTableCell align="center">Images</StyledTableCell>
+            <StyledTableCell align="center">Product Title</StyledTableCell>
+            <StyledTableCell align="center">MRP</StyledTableCell>
+            <StyledTableCell align="center">Selling Price</StyledTableCell>
+            <StyledTableCell align="center">Color</StyledTableCell>
+            <StyledTableCell align="center">Update Stock</StyledTableCell>
+            <StyledTableCell align="center">Update</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {sellerProduct.products.map((item: Product) => (
             <StyledTableRow key={item.id}>
-              <StyledTableCell component="th" scope="row">
-                <div className="flex gap-1 flex-wrap">
+              <StyledTableCell align="center" component="th" scope="row">
+                <div className="flex gap-1 flex-wrap justify-center">
                   {item.images.map((image) => (
                     <img className="w-20 rounded-md" src={image} alt="" />
                   ))}
                 </div>
               </StyledTableCell>
-              <StyledTableCell align="right">{item.title}</StyledTableCell>
-              <StyledTableCell align="right">{item.mrpPrice}</StyledTableCell>
-              <StyledTableCell align="right">
+              <StyledTableCell align="center">{item.title}</StyledTableCell>
+              <StyledTableCell align="center">{item.mrpPrice}</StyledTableCell>
+              <StyledTableCell align="center">
                 {item.sellingPrice}
               </StyledTableCell>
-              <StyledTableCell align="right">{item.color}</StyledTableCell>
-              <StyledTableCell align="right">
+              <StyledTableCell align="center">{item.color}</StyledTableCell>
+              <StyledTableCell align="center">
                 <Button size="small">in_Stock</Button>
               </StyledTableCell>
-              <StyledTableCell align="right">
+              <StyledTableCell align="center">
                 <IconButton color="primary" size="small">
                   <Edit />
                 </IconButton>

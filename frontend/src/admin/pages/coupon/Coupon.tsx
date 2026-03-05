@@ -95,27 +95,29 @@ const Coupon = () => {
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
             <TableHead>
               <TableRow>
-                <StyledTableCell>Coupon Code</StyledTableCell>
-                <StyledTableCell>Start Date</StyledTableCell>
-                <StyledTableCell>End Date</StyledTableCell>
-                <StyledTableCell>Min Order Value</StyledTableCell>
-                <StyledTableCell>Discount</StyledTableCell>
-                <StyledTableCell>Status</StyledTableCell>
-                <StyledTableCell align="right">Delete</StyledTableCell>
+                <StyledTableCell align="center">Coupon Code</StyledTableCell>
+                <StyledTableCell align="center">Start Date</StyledTableCell>
+                <StyledTableCell align="center">End Date</StyledTableCell>
+                <StyledTableCell align="center">
+                  Min Order Value
+                </StyledTableCell>
+                <StyledTableCell align="center">Discount</StyledTableCell>
+                <StyledTableCell align="center">Status</StyledTableCell>
+                <StyledTableCell align="center">Delete</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {[1, 1, 1, 1].map((item, index) => (
                 <StyledTableRow key={index}>
-                  <StyledTableCell component="th" scope="row">
+                  <StyledTableCell align="center" component="th" scope="row">
                     DIWALI2024
                   </StyledTableCell>
-                  <StyledTableCell>2024-10-25</StyledTableCell>
-                  <StyledTableCell>2024-11-10</StyledTableCell>
-                  <StyledTableCell>699</StyledTableCell>
-                  <StyledTableCell>70%</StyledTableCell>
-                  <StyledTableCell>Active</StyledTableCell>
-                  <StyledTableCell align="right">
+                  <StyledTableCell align="center">2024-10-25</StyledTableCell>
+                  <StyledTableCell align="center">2024-11-10</StyledTableCell>
+                  <StyledTableCell align="center">699</StyledTableCell>
+                  <StyledTableCell align="center">70%</StyledTableCell>
+                  <StyledTableCell align="center">Active</StyledTableCell>
+                  <StyledTableCell align="center">
                     <IconButton>
                       <DeleteIcon sx={{ color: "red" }} />
                     </IconButton>

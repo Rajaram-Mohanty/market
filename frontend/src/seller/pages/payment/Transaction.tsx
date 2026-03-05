@@ -43,23 +43,23 @@ export default function TransactionTable() {
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
         <TableHead>
           <TableRow>
-            <StyledTableCell>Date</StyledTableCell>
-            <StyledTableCell align="right">Customer Details</StyledTableCell>
-            <StyledTableCell align="right">Order</StyledTableCell>
-            <StyledTableCell align="right">Amount</StyledTableCell>
+            <StyledTableCell align="center">Date</StyledTableCell>
+            <StyledTableCell align="center">Customer Details</StyledTableCell>
+            <StyledTableCell align="center">Order</StyledTableCell>
+            <StyledTableCell align="center">Amount</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {transactions.transactions.map((item) => (
             <StyledTableRow key={item.id}>
-              <StyledTableCell component="th" scope="row">
+              <StyledTableCell align="center" component="th" scope="row">
                 {item.date}
               </StyledTableCell>
-              <StyledTableCell align="right">
+              <StyledTableCell align="center">
                 {item.customer.email}
               </StyledTableCell>
-              <StyledTableCell align="right">{item.order.id}</StyledTableCell>
-              <StyledTableCell align="right">
+              <StyledTableCell align="center">{item.order.id}</StyledTableCell>
+              <StyledTableCell align="center">
                 {item.order.totalSellingPrice}
               </StyledTableCell>
             </StyledTableRow>
