@@ -16,11 +16,23 @@ export const sendLoginSignupOtp = createAsyncThunk(
 );
 export const signIn = createAsyncThunk<any, any>(
   "/auth/signIn",
-  async (loginRequest, { rejectWithValue }) => {
+  async ({ data, navigate }, { rejectWithValue }) => {
     try {
-      const response = await api.post("/auth/signing", loginRequest);
+      const response = await api.post("/auth/signing", data);
       console.log("signIn response", response.data);
       localStorage.setItem("jwt", response.data.jwt);
+      if (response.data.role) {
+        localStorage.setItem("role", response.data.role);
+      }
+
+      if (response.data.role === "ROLE_SELLER") {
+        navigate("/seller");
+      } else if (response.data.role === "ROLE_ADMIN") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
+
       return response.data.jwt;
     } catch (error: any) {
       console.log("error ---", error);
@@ -31,11 +43,23 @@ export const signIn = createAsyncThunk<any, any>(
 
 export const signup = createAsyncThunk<any, any>(
   "/auth/signup",
-  async (signupRequest, { rejectWithValue }) => {
+  async ({ data, navigate }, { rejectWithValue }) => {
     try {
-      const response = await api.post("/auth/signup", signupRequest);
+      const response = await api.post("/auth/signup", data);
       console.log("signup response", response.data);
       localStorage.setItem("jwt", response.data.jwt);
+      if (response.data.role) {
+        localStorage.setItem("role", response.data.role);
+      }
+
+      if (response.data.role === "ROLE_SELLER") {
+        navigate("/seller");
+      } else if (response.data.role === "ROLE_ADMIN") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
+
       return response.data.jwt;
     } catch (error: any) {
       console.log("error ---", error);

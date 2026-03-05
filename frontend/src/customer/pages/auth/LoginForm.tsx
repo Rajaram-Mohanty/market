@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../state/store";
 import { useFormik } from "formik";
 import { sellerLogin } from "../../../state/seller/sellerAuthSlice";
@@ -7,13 +8,14 @@ import { sendLoginSignupOtp, signIn } from "../../../state/authSlice";
 
 const LoginForm = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { auth } = useAppSelector((store) => store);
 
   const formik = useFormik({
     initialValues: { email: "", otp: "" },
     onSubmit: (values) => {
       console.log("form data", values);
-      dispatch(signIn(values));
+      dispatch(signIn({ data: values, navigate }));
     },
   });
 

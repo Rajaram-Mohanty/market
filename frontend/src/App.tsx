@@ -21,6 +21,7 @@ import PaymentSucess from "./customer/pages/PaymentSucess";
 import Wishlist from "./customer/wishlist/Wishlist";
 import { createHomeCategories } from "./state/customer/customerSlice";
 import { homeCategories } from "./data/HomeCategories";
+import RequireAuth from "./component/RequireAuth";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -57,14 +58,63 @@ function App() {
             path="/product-details/:categoryId/:name/:productId"
             element={<ProductDetails />}
           />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/wishlist" element={<Wishlist />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/payment/success/:orderId" element={<PaymentSucess />} />
+          <Route
+            path="/cart"
+            element={
+              <RequireAuth allowedRoles={["ROLE_CUSTOMER"]}>
+                <Cart />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/wishlist"
+            element={
+              <RequireAuth allowedRoles={["ROLE_CUSTOMER"]}>
+                <Wishlist />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/checkout"
+            element={
+              <RequireAuth allowedRoles={["ROLE_CUSTOMER"]}>
+                <Checkout />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/payment/success/:orderId"
+            element={
+              <RequireAuth allowedRoles={["ROLE_CUSTOMER"]}>
+                <PaymentSucess />
+              </RequireAuth>
+            }
+          />
           <Route path="/become-seller" element={<BecomeSeller />} />
-          <Route path="/account/*" element={<Account />} />
-          <Route path="/seller/*" element={<SellerDashboard />} />
-          <Route path="/admin/*" element={<AdminDashboard />} />
+          <Route
+            path="/account/*"
+            element={
+              <RequireAuth allowedRoles={["ROLE_CUSTOMER"]}>
+                <Account />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/seller/*"
+            element={
+              <RequireAuth allowedRoles={["ROLE_SELLER"]}>
+                <SellerDashboard />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/admin/*"
+            element={
+              <RequireAuth allowedRoles={["ROLE_ADMIN"]}>
+                <AdminDashboard />
+              </RequireAuth>
+            }
+          />
         </Routes>
       </div>
     </ThemeProvider>

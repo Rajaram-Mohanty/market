@@ -1,5 +1,6 @@
 import { Button, TextField } from "@mui/material";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { sendLoginSignupOtp } from "../../../state/authSlice";
 import { useFormik } from "formik";
 import { useAppDispatch, useAppSelector } from "../../../state/store";
@@ -7,6 +8,7 @@ import { signup } from "../../../state/authSlice";
 
 const RegisterForm = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const { auth } = useAppSelector((store) => store);
 
@@ -14,7 +16,7 @@ const RegisterForm = () => {
     initialValues: { email: "", otp: "", fullName: "" },
     onSubmit: (values) => {
       console.log("form data", values);
-      dispatch(signup(values));
+      dispatch(signup({ data: values, navigate }));
     },
   });
 
