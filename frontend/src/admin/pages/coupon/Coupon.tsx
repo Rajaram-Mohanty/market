@@ -107,7 +107,9 @@ const Coupon = () => {
   }, [dispatch, jwt]);
 
   const handleDelete = (id: number) => {
-    dispatch(deleteCoupon({ id, jwt }));
+    dispatch(deleteCoupon({ id, jwt })).then(() => {
+      dispatch(fetchAllCoupons(jwt));
+    });
   };
 
   const handleEditClick = (item: any) => {
@@ -136,7 +138,9 @@ const Coupon = () => {
       };
       dispatch(
         updateCoupon({ id: selectedCoupon.id, coupon: updatedData, jwt }),
-      );
+      ).then(() => {
+        dispatch(fetchAllCoupons(jwt));
+      });
       handleClose();
     }
   };

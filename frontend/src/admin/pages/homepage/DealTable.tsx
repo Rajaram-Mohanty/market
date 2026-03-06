@@ -15,6 +15,7 @@ import {
   deleteDeal,
   updateDeal,
 } from "../../../state/admin/dealSlice";
+import { fetchHomePageData } from "../../../state/customer/customerSlice";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Dialog,
@@ -75,7 +76,9 @@ export default function DealTable() {
   }, []);
 
   const handleDeleteDeal = (id: number) => {
-    dispatch(deleteDeal(id));
+    dispatch(deleteDeal(id)).then(() => {
+      dispatch(getAllDeals());
+    });
   };
 
   const handleEditClick = (item: any) => {
@@ -96,7 +99,9 @@ export default function DealTable() {
           id: selectedDeal.id,
           deal: { ...selectedDeal, discount: newDiscount },
         }),
-      );
+      ).then(() => {
+        dispatch(getAllDeals());
+      });
       handleClose();
     }
   };

@@ -19,8 +19,6 @@ import { fetchUserProfile } from "./state/authSlice";
 import Auth from "./customer/pages/auth/Auth";
 import PaymentSucess from "./customer/pages/PaymentSucess";
 import Wishlist from "./customer/wishlist/Wishlist";
-import { createHomeCategories } from "./state/customer/customerSlice";
-import { homeCategories } from "./data/HomeCategories";
 import RequireAuth from "./component/RequireAuth";
 
 function App() {
@@ -29,8 +27,11 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    dispatch(fetchSellerProfile(localStorage.getItem("jwt") || ""));
-    dispatch(createHomeCategories(homeCategories));
+    const jwt = localStorage.getItem("jwt");
+    const role = localStorage.getItem("role");
+    if (jwt && role === "ROLE_SELLER") {
+      dispatch(fetchSellerProfile(jwt));
+    }
   }, []);
 
   // useEffect(() => {
@@ -40,9 +41,11 @@ function App() {
   // }, [seller]);
 
   useEffect(() => {
-    dispatch(
-      fetchUserProfile({ jwt: auth.jwt || localStorage.getItem("jwt") }),
-    );
+    const jwt = auth.jwt || localStorage.getItem("jwt");
+    const role = localStorage.getItem("role");
+    if (jwt && role !== "ROLE_SELLER") {
+      dispatch(fetchUserProfile({ jwt }));
+    }
   }, [auth.jwt]);
 
   return (

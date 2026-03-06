@@ -7,7 +7,10 @@ const GridTable = () => {
 
   return (
     <div>
-      <HomeCategoryTable data={home.homePageData?.grid || []} />
+      <HomeCategoryTable
+        data={home.homePageData?.grid || []}
+        sectionName="GRID"
+      />
     </div>
   );
 };

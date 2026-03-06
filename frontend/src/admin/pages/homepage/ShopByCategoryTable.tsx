@@ -6,7 +6,10 @@ const ShopByCategoryTable = () => {
   const { home } = useAppSelector((store) => store);
   return (
     <div>
-      <HomeCategoryTable data={home.homePageData?.shopByCategories || []} />
+      <HomeCategoryTable
+        data={home.homePageData?.shopByCategories || []}
+        sectionName="SHOP_BY_CATEGORIES"
+      />
     </div>
   );
 };

@@ -7,7 +7,10 @@ const ElectronicTable = () => {
 
   return (
     <div>
-      <HomeCategoryTable data={home.homePageData?.electricCategories || []} />
+      <HomeCategoryTable
+        data={home.homePageData?.electricCategories || []}
+        sectionName="ELECTRIC_CATEGORIES"
+      />
     </div>
   );
 };

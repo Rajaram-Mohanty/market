@@ -1,5 +1,8 @@
 package org.projects.market.service.impl;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+
 import lombok.RequiredArgsConstructor;
 import org.projects.market.model.HomeCategory;
 import org.projects.market.repository.HomeCategoryRepository;
@@ -12,6 +15,7 @@ import java.util.List;
 public class HomeCategoryServiceImpl implements HomeCategoryService {
 
     private final HomeCategoryRepository homeCategoryRepository;
+    private final Cloudinary cloudinary;
 
     @Override
     public HomeCategory createHomeCategory(HomeCategory homeCategory) {
@@ -20,10 +24,7 @@ public class HomeCategoryServiceImpl implements HomeCategoryService {
 
     @Override
     public List<HomeCategory> createCategories(List<HomeCategory> homeCategories) {
-        if (homeCategoryRepository.findAll().isEmpty()) {
-            return homeCategoryRepository.saveAll(homeCategories);
-        }
-        return homeCategoryRepository.findAll();
+        return homeCategoryRepository.saveAll(homeCategories);
     }
 
     @Override
@@ -47,9 +48,36 @@ public class HomeCategoryServiceImpl implements HomeCategoryService {
 
     @Override
     public void deleteHomeCategory(Long id) throws Exception {
-        if (!homeCategoryRepository.existsById(id)) {
-            throw new Exception("Category not found");
+        HomeCategory category = homeCategoryRepository.findById(id)
+                .orElseThrow(() -> new Exception("Category not found"));
+
+        // Delete from Cloudinary if image exists
+        if (category.getImage() != null && !category.getImage().isEmpty()) {
+            try {
+                String publicId = extractPublicIdFromUrl(category.getImage());
+                if (publicId != null) {
+                    cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+                }
+            } catch (Exception e) {
+                System.out.println("Failed to delete image from Cloudinary: " + e.getMessage());
+            }
         }
+
         homeCategoryRepository.deleteById(id);
+    }
+
+    private String extractPublicIdFromUrl(String url) {
+        if (url == null || url.isEmpty())
+            return null;
+        String[] parts = url.split("/");
+        if (parts.length == 0)
+            return null;
+
+        String lastPart = parts[parts.length - 1];
+        int dotIndex = lastPart.lastIndexOf('.');
+        if (dotIndex != -1) {
+            return lastPart.substring(0, dotIndex);
+        }
+        return lastPart;
     }
 }

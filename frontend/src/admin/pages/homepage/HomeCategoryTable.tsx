@@ -14,16 +14,24 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  CircularProgress,
+  Box,
 } from "@mui/material";
 import { Edit } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import type { HomeCategory } from "../../../types/homeCategoryTypes";
 import { useState } from "react";
+import { uploadToCloudinary } from "../../../util/UploadToCloudinary";
 import { useAppDispatch } from "../../../state/store";
 import {
   deleteHomeCategory,
   updateHomeCategory,
 } from "../../../state/admin/adminSlice";
+import {
+  fetchHomePageData,
+  createHomeCategories,
+} from "../../../state/customer/customerSlice";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -63,9 +71,17 @@ const rows = [
   createData("Gingerbread", 356, 16.0, 49, 3.9),
 ];
 
-export default function HomeCategoryTable({ data }: { data: HomeCategory[] }) {
+export default function HomeCategoryTable({
+  data,
+  sectionName,
+}: {
+  data: HomeCategory[];
+  sectionName?: string;
+}) {
   const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
+  const [openCreate, setOpenCreate] = useState(false);
+  const [uploadImage, setUploadImage] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<HomeCategory | null>(
     null,
   );
@@ -73,6 +89,27 @@ export default function HomeCategoryTable({ data }: { data: HomeCategory[] }) {
   // Edit fields
   const [editCategoryId, setEditCategoryId] = useState("");
   const [editImage, setEditImage] = useState("");
+
+  // Create fields
+  const [createCategoryId, setCreateCategoryId] = useState("");
+  const [createImage, setCreateImage] = useState("");
+
+  const handleImageChange = async (e: any) => {
+    const file = e.target.files[0];
+    if (file) {
+      setUploadImage(true);
+      try {
+        const image = await uploadToCloudinary(file);
+        if (image) {
+          setCreateImage(image);
+        }
+      } catch (error) {
+        console.log("Error uploading image:", error);
+      } finally {
+        setUploadImage(false);
+      }
+    }
+  };
 
   const handleEditClick = (category: HomeCategory) => {
     setSelectedCategory(category);
@@ -86,6 +123,26 @@ export default function HomeCategoryTable({ data }: { data: HomeCategory[] }) {
     setSelectedCategory(null);
   };
 
+  const handleCloseCreate = () => {
+    setOpenCreate(false);
+    setCreateCategoryId("");
+    setCreateImage("");
+  };
+
+  const handleCreate = () => {
+    const newCategory = {
+      categoryId: createCategoryId,
+      image: createImage,
+      name: "",
+      section: sectionName || "GRID", // fallback
+    };
+
+    dispatch(createHomeCategories([newCategory])).then(() => {
+      dispatch(fetchHomePageData());
+    });
+    handleCloseCreate();
+  };
+
   const handleUpdate = () => {
     if (selectedCategory && selectedCategory.id) {
       const updatedData = {
@@ -95,92 +152,164 @@ export default function HomeCategoryTable({ data }: { data: HomeCategory[] }) {
       };
       dispatch(
         updateHomeCategory({ id: selectedCategory.id, data: updatedData }),
-      );
+      ).then(() => {
+        dispatch(fetchHomePageData());
+      });
       handleClose();
     }
   };
 
   const handleDelete = (id: number | undefined) => {
     if (id) {
-      dispatch(deleteHomeCategory(id));
+      dispatch(deleteHomeCategory(id)).then(() => {
+        dispatch(fetchHomePageData());
+      });
     }
   };
 
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 700 }} aria-label="customized table">
-        <TableHead>
-          <TableRow>
-            <StyledTableCell align="center">No.</StyledTableCell>
-            <StyledTableCell align="center">Id</StyledTableCell>
-            <StyledTableCell align="center">Image</StyledTableCell>
-            <StyledTableCell align="center">Category</StyledTableCell>
-            <StyledTableCell align="center">Update</StyledTableCell>
-            <StyledTableCell align="center">Delete</StyledTableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data?.map((category, index) => (
-            <StyledTableRow key={category.id}>
-              <StyledTableCell align="center" component="th" scope="row">
-                {index + 1}
-              </StyledTableCell>
-              <StyledTableCell align="center">{category.id}</StyledTableCell>
-              <StyledTableCell align="center">
-                <div className="flex justify-center">
-                  <img
-                    className="w-20 rounded-md"
-                    src={category.image}
-                    alt=""
-                  />
-                </div>
-              </StyledTableCell>
-              <StyledTableCell align="center">
-                {category.categoryId}
-              </StyledTableCell>
-              <StyledTableCell align="center">
-                <Button onClick={() => handleEditClick(category)}>
-                  <Edit />
-                </Button>
-              </StyledTableCell>
-              <StyledTableCell align="center">
-                <IconButton onClick={() => handleDelete(category.id)}>
-                  <DeleteIcon sx={{ color: "red" }} />
-                </IconButton>
-              </StyledTableCell>
-            </StyledTableRow>
-          ))}
-        </TableBody>
-      </Table>
+    <div>
+      <div className="flex justify-end pb-4 border-b border-gray-200 mb-4">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setOpenCreate(true)}
+        >
+          + Add Category
+        </Button>
+      </div>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 700 }} aria-label="customized table">
+          <TableHead>
+            <TableRow>
+              <StyledTableCell align="center">No.</StyledTableCell>
+              <StyledTableCell align="center">Id</StyledTableCell>
+              <StyledTableCell align="center">Image</StyledTableCell>
+              <StyledTableCell align="center">Category</StyledTableCell>
+              <StyledTableCell align="center">Update</StyledTableCell>
+              <StyledTableCell align="center">Delete</StyledTableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data?.map((category, index) => (
+              <StyledTableRow key={category.id}>
+                <StyledTableCell align="center" component="th" scope="row">
+                  {index + 1}
+                </StyledTableCell>
+                <StyledTableCell align="center">{category.id}</StyledTableCell>
+                <StyledTableCell align="center">
+                  <div className="flex justify-center">
+                    <img
+                      className="w-20 rounded-md"
+                      src={category.image}
+                      alt=""
+                    />
+                  </div>
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  {category.categoryId}
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  <Button onClick={() => handleEditClick(category)}>
+                    <Edit />
+                  </Button>
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  <IconButton onClick={() => handleDelete(category.id)}>
+                    <DeleteIcon sx={{ color: "red" }} />
+                  </IconButton>
+                </StyledTableCell>
+              </StyledTableRow>
+            ))}
+          </TableBody>
+        </Table>
 
-      {/* Edit Category Modal */}
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle>Update Home Category</DialogTitle>
-        <DialogContent>
-          <TextField
-            margin="dense"
-            label="Category ID"
-            fullWidth
-            variant="outlined"
-            value={editCategoryId}
-            onChange={(e) => setEditCategoryId(e.target.value)}
-          />
-          <TextField
-            margin="dense"
-            label="Image URL"
-            fullWidth
-            variant="outlined"
-            value={editImage}
-            onChange={(e) => setEditImage(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleUpdate} color="primary" variant="contained">
-            Update
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </TableContainer>
+        {/* Edit Category Modal */}
+        <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+          <DialogTitle>Update Home Category</DialogTitle>
+          <DialogContent>
+            <TextField
+              margin="dense"
+              label="Category ID"
+              fullWidth
+              variant="outlined"
+              value={editCategoryId}
+              onChange={(e) => setEditCategoryId(e.target.value)}
+            />
+            <TextField
+              margin="dense"
+              label="Image URL"
+              fullWidth
+              variant="outlined"
+              value={editImage}
+              onChange={(e) => setEditImage(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={handleUpdate} color="primary" variant="contained">
+              Update
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Create Category Modal */}
+        <Dialog
+          open={openCreate}
+          onClose={handleCloseCreate}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>Add New Home Category</DialogTitle>
+          <DialogContent>
+            <TextField
+              margin="dense"
+              label="Category ID (e.g. mens_shirts)"
+              fullWidth
+              variant="outlined"
+              value={createCategoryId}
+              onChange={(e) => setCreateCategoryId(e.target.value)}
+            />
+
+            <div className="flex items-center gap-4 mt-4">
+              <input
+                type="file"
+                accept="image/*"
+                id="fileInput"
+                style={{ display: "none" }}
+                onChange={handleImageChange}
+              />
+              <label htmlFor="fileInput" className="relative cursor-pointer">
+                <Box className="w-24 h-24 border rounded-md flex items-center justify-center border-gray-400">
+                  {createImage ? (
+                    <img
+                      src={createImage}
+                      alt="Category Preview"
+                      className="w-full h-full object-cover rounded-md"
+                    />
+                  ) : (
+                    <AddPhotoAlternateIcon className="text-gray-400" />
+                  )}
+                </Box>
+                {uploadImage && (
+                  <Box className="absolute left-0 right-0 top-0 bottom-0 flex items-center justify-center bg-black bg-opacity-10 rounded-md">
+                    <CircularProgress size={24} />
+                  </Box>
+                )}
+              </label>
+              <div className="text-sm text-gray-500">
+                Click to upload an image from your computer to Cloudinary.
+              </div>
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseCreate}>Cancel</Button>
+            <Button onClick={handleCreate} color="primary" variant="contained">
+              Create
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </TableContainer>
+    </div>
   );
 }
