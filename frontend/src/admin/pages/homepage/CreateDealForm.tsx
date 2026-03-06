@@ -15,7 +15,7 @@ import { createDeal } from "../../../state/admin/dealSlice";
 
 const CreateDealForm = () => {
   const dispatch = useAppDispatch();
-  const { customer } = useAppSelector((store) => store);
+  const { home } = useAppSelector((store) => store);
 
   const formik = useFormik({
     initialValues: {
@@ -70,7 +70,7 @@ const CreateDealForm = () => {
               name="category"
               onChange={formik.handleChange}
             >
-              {customer.homePageData?.dealCategories.map((item) => (
+              {home.homePageData?.dealCategories?.map((item) => (
                 <MenuItem key={item.id} value={item.id}>
                   {item.name}
                 </MenuItem>

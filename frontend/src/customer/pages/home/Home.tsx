@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ElectricCategory from "./electric-category/ElectricCategory";
 import CategoryGrid from "./category-grid/CategoryGrid";
 import Deal from "./deal/Deal";
@@ -6,14 +6,25 @@ import ShopByCategory from "./shop-by-category/ShopByCategory";
 import { Button } from "@mui/material";
 import { Storefront } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../../state/store";
+import { fetchHomePageData } from "../../../state/customer/customerSlice";
 
 const Home = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { home } = useAppSelector((store) => store);
+
+  useEffect(() => {
+    dispatch(fetchHomePageData());
+  }, [dispatch]);
+
   return (
     <div className="space-y-5 lg:space-y-10 relative pb-20">
       <ElectricCategory />
 
-      <CategoryGrid />
+      {home.homePageData?.grid && (
+        <CategoryGrid gridData={home.homePageData.grid} />
+      )}
 
       <div className="pt-20">
         <h1 className="text-lg lg:text-4xl font-bold text-primary pb-5 lg:pb-10 text-center">

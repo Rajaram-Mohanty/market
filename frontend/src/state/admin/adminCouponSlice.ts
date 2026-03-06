@@ -75,6 +75,25 @@ export const deleteCoupon = createAsyncThunk<
   }
 });
 
+export const updateCoupon = createAsyncThunk<
+  Coupon,
+  { id: number; coupon: any; jwt: string },
+  { rejectValue: string }
+>("coupon/updateCoupon", async ({ id, coupon, jwt }, { rejectWithValue }) => {
+  try {
+    const response = await api.patch(`${API_URL}/admin/update/${id}`, coupon, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    });
+    console.log("update coupon", response.data);
+    return response.data;
+  } catch (error: any) {
+    console.log("error", error);
+    return rejectWithValue(error.response?.data || "Failed to update coupon");
+  }
+});
+
 // Slice definition
 const adminCouponSlice = createSlice({
   name: "coupon",
@@ -133,6 +152,28 @@ const adminCouponSlice = createSlice({
         },
       )
       .addCase(deleteCoupon.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // Update Coupon
+      .addCase(updateCoupon.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        updateCoupon.fulfilled,
+        (state, action: PayloadAction<Coupon>) => {
+          state.loading = false;
+          const index = state.coupons.findIndex(
+            (c) => c.id === action.payload.id,
+          );
+          if (index !== -1) {
+            state.coupons[index] = action.payload;
+          }
+        },
+      )
+      .addCase(updateCoupon.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

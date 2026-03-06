@@ -1,16 +1,15 @@
-import React from 'react'
-import HomeCategoryTable from './HomeCategoryTable'
-import { useAppSelector } from '../../../state/store'
+import React from "react";
+import HomeCategoryTable from "./HomeCategoryTable";
+import { useAppSelector } from "../../../state/store";
 
 const GridTable = () => {
-
-  const {customer} = useAppSelector(store => store)
+  const { home } = useAppSelector((store) => store);
 
   return (
     <div>
-      <HomeCategoryTable data={customer.homePageData?.grid || []}/>
+      <HomeCategoryTable data={home.homePageData?.grid || []} />
     </div>
-  )
-}
+  );
+};
 
-export default GridTable
+export default GridTable;

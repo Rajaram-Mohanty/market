@@ -32,7 +32,7 @@ public class HomeCategoryServiceImpl implements HomeCategoryService {
     }
 
     @Override
-    public HomeCategory updateHomeCategory( HomeCategory category, Long id) throws Exception{
+    public HomeCategory updateHomeCategory(HomeCategory category, Long id) throws Exception {
         HomeCategory existingCategory = homeCategoryRepository.findById(id)
                 .orElseThrow(() -> new Exception("Category not found"));
 
@@ -43,5 +43,13 @@ public class HomeCategoryServiceImpl implements HomeCategoryService {
             existingCategory.setCategoryId(category.getCategoryId());
         }
         return homeCategoryRepository.save(existingCategory);
+    }
+
+    @Override
+    public void deleteHomeCategory(Long id) throws Exception {
+        if (!homeCategoryRepository.existsById(id)) {
+            throw new Exception("Category not found");
+        }
+        homeCategoryRepository.deleteById(id);
     }
 }

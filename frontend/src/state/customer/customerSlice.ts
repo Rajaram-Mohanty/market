@@ -26,6 +26,24 @@ export const createHomeCategories = createAsyncThunk<HomeData, HomeCategory[]>(
   },
 );
 
+export const fetchHomePageData = createAsyncThunk<HomeData, void>(
+  "home/fetchHomePageData",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/home-page");
+      console.log("fetch home page data response", response.data);
+      return response.data;
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch home page data";
+      console.log("error ", errorMessage, error);
+      return rejectWithValue(errorMessage);
+    }
+  },
+);
+
 interface HomeState {
   homePageData: HomeData | null;
   homeCategories: HomeCategory[];
@@ -58,6 +76,21 @@ const homeSlice = createSlice({
         },
       )
       .addCase(createHomeCategories.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(fetchHomePageData.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchHomePageData.fulfilled,
+        (state, action: PayloadAction<HomeData>) => {
+          state.loading = false;
+          state.homePageData = action.payload;
+        },
+      )
+      .addCase(fetchHomePageData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

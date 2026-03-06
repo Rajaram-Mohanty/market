@@ -7,7 +7,12 @@ import java.util.List;
 
 public interface HomeCategoryService {
     HomeCategory createHomeCategory(HomeCategory HomeCategory);
+
     List<HomeCategory> createCategories(List<HomeCategory> HomeCategory);
+
     HomeCategory updateHomeCategory(HomeCategory HomeCategory, Long id) throws Exception;
+
     List<HomeCategory> getAllHomeCategories();
+
+    void deleteHomeCategory(Long id) throws Exception;
 }

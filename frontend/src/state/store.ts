@@ -26,7 +26,7 @@ const rootReducer = combineReducers({
   cart: cartSlice,
   order: orderSlice,
   wishlist: wishlistSlice,
-  customer: customerSlice,
+  home: customerSlice,
   deal: dealSlice,
   coupon: adminCouponSlice,
 

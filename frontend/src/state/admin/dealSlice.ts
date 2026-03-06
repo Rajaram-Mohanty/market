@@ -79,6 +79,28 @@ export const deleteDeal = createAsyncThunk<
   }
 });
 
+export const updateDeal = createAsyncThunk<
+  Deal,
+  { id: number; deal: any },
+  { rejectValue: string }
+>("deals/updateDeal", async ({ id, deal }, { rejectWithValue }) => {
+  try {
+    const response = await api.patch(`/admin/deals/${id}`, deal, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      },
+    });
+    console.log("update deal", response.data);
+    return response.data;
+  } catch (error: any) {
+    console.log("error", error);
+    return rejectWithValue(
+      error.response?.data?.message || "Failed to update deal",
+    );
+  }
+});
+
 // Slice definition
 const dealSlice = createSlice({
   name: "deals",
@@ -129,6 +151,27 @@ const dealSlice = createSlice({
         state.deals = state.deals.filter((deal) => deal.id !== action.payload);
       })
       .addCase(deleteDeal.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // Update Deal Cases
+      .addCase(updateDeal.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.dealUpdated = false;
+      })
+      .addCase(updateDeal.fulfilled, (state, action: PayloadAction<Deal>) => {
+        state.loading = false;
+        state.dealUpdated = true;
+        const index = state.deals.findIndex(
+          (deal) => deal.id === action.payload.id,
+        );
+        if (index !== -1) {
+          state.deals[index] = action.payload;
+        }
+      })
+      .addCase(updateDeal.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

@@ -6,9 +6,24 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { Button } from "@mui/material";
+import {
+  Button,
+  IconButton,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 import { Edit } from "@mui/icons-material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import type { HomeCategory } from "../../../types/homeCategoryTypes";
+import { useState } from "react";
+import { useAppDispatch } from "../../../state/store";
+import {
+  deleteHomeCategory,
+  updateHomeCategory,
+} from "../../../state/admin/adminSlice";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -49,6 +64,48 @@ const rows = [
 ];
 
 export default function HomeCategoryTable({ data }: { data: HomeCategory[] }) {
+  const dispatch = useAppDispatch();
+  const [open, setOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<HomeCategory | null>(
+    null,
+  );
+
+  // Edit fields
+  const [editCategoryId, setEditCategoryId] = useState("");
+  const [editImage, setEditImage] = useState("");
+
+  const handleEditClick = (category: HomeCategory) => {
+    setSelectedCategory(category);
+    setEditCategoryId(category.categoryId);
+    setEditImage(category.image);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedCategory(null);
+  };
+
+  const handleUpdate = () => {
+    if (selectedCategory && selectedCategory.id) {
+      const updatedData = {
+        ...selectedCategory,
+        categoryId: editCategoryId,
+        image: editImage,
+      };
+      dispatch(
+        updateHomeCategory({ id: selectedCategory.id, data: updatedData }),
+      );
+      handleClose();
+    }
+  };
+
+  const handleDelete = (id: number | undefined) => {
+    if (id) {
+      dispatch(deleteHomeCategory(id));
+    }
+  };
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -59,10 +116,11 @@ export default function HomeCategoryTable({ data }: { data: HomeCategory[] }) {
             <StyledTableCell align="center">Image</StyledTableCell>
             <StyledTableCell align="center">Category</StyledTableCell>
             <StyledTableCell align="center">Update</StyledTableCell>
+            <StyledTableCell align="center">Delete</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map((category, index) => (
+          {data?.map((category, index) => (
             <StyledTableRow key={category.id}>
               <StyledTableCell align="center" component="th" scope="row">
                 {index + 1}
@@ -81,14 +139,48 @@ export default function HomeCategoryTable({ data }: { data: HomeCategory[] }) {
                 {category.categoryId}
               </StyledTableCell>
               <StyledTableCell align="center">
-                <Button>
+                <Button onClick={() => handleEditClick(category)}>
                   <Edit />
                 </Button>
+              </StyledTableCell>
+              <StyledTableCell align="center">
+                <IconButton onClick={() => handleDelete(category.id)}>
+                  <DeleteIcon sx={{ color: "red" }} />
+                </IconButton>
               </StyledTableCell>
             </StyledTableRow>
           ))}
         </TableBody>
       </Table>
+
+      {/* Edit Category Modal */}
+      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle>Update Home Category</DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="dense"
+            label="Category ID"
+            fullWidth
+            variant="outlined"
+            value={editCategoryId}
+            onChange={(e) => setEditCategoryId(e.target.value)}
+          />
+          <TextField
+            margin="dense"
+            label="Image URL"
+            fullWidth
+            variant="outlined"
+            value={editImage}
+            onChange={(e) => setEditImage(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleUpdate} color="primary" variant="contained">
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
     </TableContainer>
   );
 }

@@ -9,9 +9,20 @@ import Paper from "@mui/material/Paper";
 import { Button, IconButton } from "@mui/material";
 import { Edit } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../../state/store";
-import { useEffect } from "react";
-import { getAllDeals } from "../../../state/admin/dealSlice";
+import { useEffect, useState } from "react";
+import {
+  getAllDeals,
+  deleteDeal,
+  updateDeal,
+} from "../../../state/admin/dealSlice";
 import DeleteIcon from "@mui/icons-material/Delete";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+} from "@mui/material";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -55,9 +66,40 @@ export default function DealTable() {
   const dispatch = useAppDispatch();
   const { deal } = useAppSelector((store) => store);
 
+  const [open, setOpen] = useState(false);
+  const [selectedDeal, setSelectedDeal] = useState<any>(null);
+  const [newDiscount, setNewDiscount] = useState<number>(0);
+
   useEffect(() => {
     dispatch(getAllDeals());
   }, []);
+
+  const handleDeleteDeal = (id: number) => {
+    dispatch(deleteDeal(id));
+  };
+
+  const handleEditClick = (item: any) => {
+    setSelectedDeal(item);
+    setNewDiscount(item.discount);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedDeal(null);
+  };
+
+  const handleUpdateDeal = () => {
+    if (selectedDeal) {
+      dispatch(
+        updateDeal({
+          id: selectedDeal.id,
+          deal: { ...selectedDeal, discount: newDiscount },
+        }),
+      );
+      handleClose();
+    }
+  };
 
   return (
     <TableContainer component={Paper}>
@@ -73,7 +115,7 @@ export default function DealTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {deal.deals.map((item, index) => (
+          {deal.deals?.map((item, index) => (
             <StyledTableRow key={item.id}>
               <StyledTableCell align="center" component="th" scope="row">
                 {index + 1}
@@ -92,12 +134,12 @@ export default function DealTable() {
               </StyledTableCell>
               <StyledTableCell align="center">{item.discount}</StyledTableCell>
               <StyledTableCell align="center">
-                <Button>
+                <Button onClick={() => handleEditClick(item)}>
                   <Edit />
                 </Button>
               </StyledTableCell>
               <StyledTableCell align="center">
-                <IconButton>
+                <IconButton onClick={() => handleDeleteDeal(item.id as number)}>
                   <DeleteIcon sx={{ color: "red" }} />
                 </IconButton>
               </StyledTableCell>
@@ -105,6 +147,32 @@ export default function DealTable() {
           ))}
         </TableBody>
       </Table>
+
+      {/* Edit Deal Modal */}
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Update Deal Discount</DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="dense"
+            label="Discount %"
+            type="number"
+            fullWidth
+            variant="outlined"
+            value={newDiscount}
+            onChange={(e) => setNewDiscount(Number(e.target.value))}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button
+            onClick={handleUpdateDeal}
+            color="primary"
+            variant="contained"
+          >
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
     </TableContainer>
   );
 }

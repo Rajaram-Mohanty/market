@@ -1,4 +1,7 @@
 import { Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
+import { useAppDispatch } from "../state/store";
+import { fetchHomePageData } from "../state/customer/customerSlice";
 import SellerTable from "../admin/pages/sellers/SellersTable";
 import Coupon from "../admin/pages/coupon/Coupon";
 import AddNewCouponForm from "../admin/pages/coupon/AddNewCouponForm";
@@ -8,6 +11,12 @@ import ShopByCategoryTable from "../admin/pages/homepage/ShopByCategoryTable";
 import ElectronicTable from "../admin/pages/homepage/ElectronicTable";
 
 const AdminRoutes = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchHomePageData());
+  }, [dispatch]);
+
   return (
     <Routes>
       <Route path="/" element={<SellerTable />} />

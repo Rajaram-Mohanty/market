@@ -8,10 +8,17 @@ import java.util.List;
 
 public interface CouponService {
     Cart applyCoupon(String code, double orderValue, User user) throws Exception;
+
     Cart removeCoupon(String code, User user) throws Exception;
+
     Coupon findCouponById(Long Id) throws Exception;
+
+    Coupon updateCoupon(Coupon coupon, Long id) throws Exception;
+
     Coupon createCoupon(Coupon coupon);
+
     List<Coupon> findAllCoupons();
+
     void deleteCoupon(Long Id) throws Exception;
 
 }

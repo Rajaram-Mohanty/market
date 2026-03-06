@@ -20,8 +20,7 @@ public class HomeCategoryController {
 
     @PostMapping("/home/categories")
     public ResponseEntity<Home> createHomeCategories(
-            @RequestBody List<HomeCategory> homeCategories
-    ) {
+            @RequestBody List<HomeCategory> homeCategories) {
         List<HomeCategory> categories = homeCategoryService.createCategories(homeCategories);
         Home homePageData = homeService.createHomePageData(categories);
         return new ResponseEntity<>(homePageData, HttpStatus.ACCEPTED);
@@ -36,9 +35,17 @@ public class HomeCategoryController {
     @PatchMapping("/admin/home-category/{id}")
     public ResponseEntity<HomeCategory> updateHomeCategory(
             @PathVariable Long id,
-            @RequestBody HomeCategory homeCategory
-    ) throws Exception {
+            @RequestBody HomeCategory homeCategory) throws Exception {
         HomeCategory updatedCategory = homeCategoryService.updateHomeCategory(homeCategory, id);
         return new ResponseEntity<>(updatedCategory, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/admin/home-category/{id}")
+    public ResponseEntity<org.projects.market.response.ApiResponse> deleteHomeCategory(@PathVariable Long id)
+            throws Exception {
+        homeCategoryService.deleteHomeCategory(id);
+        org.projects.market.response.ApiResponse response = new org.projects.market.response.ApiResponse();
+        response.setMessage("Home Category deleted successfully");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

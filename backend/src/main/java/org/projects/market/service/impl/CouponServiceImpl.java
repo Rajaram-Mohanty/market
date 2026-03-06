@@ -88,6 +88,33 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public Coupon updateCoupon(Coupon coupon, Long id) throws Exception {
+        Coupon existingCoupon = findCouponById(id);
+
+        if (coupon.getCode() != null) {
+            existingCoupon.setCode(coupon.getCode());
+        }
+        if (coupon.getDiscountPercentage() != 0) {
+            existingCoupon.setDiscountPercentage(coupon.getDiscountPercentage());
+        }
+        if (coupon.getValidityStartDate() != null) {
+            existingCoupon.setValidityStartDate(coupon.getValidityStartDate());
+        }
+        if (coupon.getValidityEndDate() != null) {
+            existingCoupon.setValidityEndDate(coupon.getValidityEndDate());
+        }
+        if (coupon.getMinimumOrderValue() != 0) {
+            existingCoupon.setMinimumOrderValue(coupon.getMinimumOrderValue());
+        }
+        if (coupon.getIsActive() != null) {
+            existingCoupon.setIsActive(coupon.getIsActive());
+        }
+
+        return couponRepository.save(existingCoupon);
+    }
+
+    @Override
     public List<Coupon> findAllCoupons() {
         return couponRepository.findAll();
     }

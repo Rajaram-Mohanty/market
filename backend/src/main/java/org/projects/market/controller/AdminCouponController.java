@@ -48,6 +48,15 @@ public class AdminCouponController {
         return new ResponseEntity<>(createdCoupon, HttpStatus.CREATED);
     }
 
+    @PatchMapping("/admin/update/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Coupon> updateCoupon(
+            @PathVariable Long id,
+            @RequestBody Coupon coupon) throws Exception {
+        Coupon updatedCoupon = couponService.updateCoupon(coupon, id);
+        return new ResponseEntity<>(updatedCoupon, HttpStatus.OK);
+    }
+
     @DeleteMapping("/admin/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse> deleteCoupon(@PathVariable Long id) throws Exception {
