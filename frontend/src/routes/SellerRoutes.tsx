@@ -3,6 +3,7 @@ import Payment from "../seller/pages/payment/Payment";
 import { Route, Routes } from "react-router-dom";
 import Products from "../seller/pages/products/Products";
 import AddProduct from "../seller/pages/products/AddProduct";
+import UpdateProduct from "../seller/pages/products/UpdateProduct";
 import Orders from "../seller/pages/orders/Orders";
 import Transaction from "../seller/pages/payment/Transaction";
 import Profile from "../seller/pages/account/Profile";
@@ -15,6 +16,7 @@ const SellerRoutes = () => {
         <Route path="/orders" element={<Orders />} />
         <Route path="/products" element={<Products />} />
         <Route path="/add-product" element={<AddProduct />} />
+        <Route path="/update-product/:productId" element={<UpdateProduct />} />
         <Route path="/payment" element={<Payment />} />
         <Route path="/transaction" element={<Transaction />} />
         <Route path="/account" element={<Profile />} />

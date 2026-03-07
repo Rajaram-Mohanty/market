@@ -7,11 +7,15 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { useEffect } from "react";
-import { fetchSellerProducts } from "../../../state/seller/sellerProductSlice";
+import {
+  fetchSellerProducts,
+  deleteProduct,
+} from "../../../state/seller/sellerProductSlice";
 import { useAppDispatch, useAppSelector } from "../../../state/store";
 import type { Product } from "../../../types/productTypes";
 import { Button, IconButton } from "@mui/material";
-import { Edit } from "@mui/icons-material";
+import { Edit, Delete } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -35,11 +39,18 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 export default function ProductTable() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { sellerProduct } = useAppSelector((store) => store);
 
   useEffect(() => {
     dispatch(fetchSellerProducts(localStorage.getItem("jwt")));
   }, []);
+
+  const handleDelete = (productId: number | undefined) => {
+    if (productId) {
+      dispatch(deleteProduct(productId));
+    }
+  };
 
   return (
     <TableContainer component={Paper}>
@@ -53,6 +64,7 @@ export default function ProductTable() {
             <StyledTableCell align="center">Color</StyledTableCell>
             <StyledTableCell align="center">Update Stock</StyledTableCell>
             <StyledTableCell align="center">Update</StyledTableCell>
+            <StyledTableCell align="center">Delete</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -60,8 +72,13 @@ export default function ProductTable() {
             <StyledTableRow key={item.id}>
               <StyledTableCell align="center" component="th" scope="row">
                 <div className="flex gap-1 flex-wrap justify-center">
-                  {item.images.map((image) => (
-                    <img className="w-20 rounded-md" src={image} alt="" />
+                  {item.images.map((image, index) => (
+                    <img
+                      key={index}
+                      className="w-20 rounded-md"
+                      src={image}
+                      alt=""
+                    />
                   ))}
                 </div>
               </StyledTableCell>
@@ -75,8 +92,21 @@ export default function ProductTable() {
                 <Button size="small">in_Stock</Button>
               </StyledTableCell>
               <StyledTableCell align="center">
-                <IconButton color="primary" size="small">
+                <IconButton
+                  color="primary"
+                  size="small"
+                  onClick={() => navigate(`/seller/update-product/${item.id}`)}
+                >
                   <Edit />
+                </IconButton>
+              </StyledTableCell>
+              <StyledTableCell align="center">
+                <IconButton
+                  color="error"
+                  size="small"
+                  onClick={() => handleDelete(item.id)}
+                >
+                  <Delete />
                 </IconButton>
               </StyledTableCell>
             </StyledTableRow>

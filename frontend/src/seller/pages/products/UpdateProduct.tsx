@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -10,6 +10,7 @@ import {
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useFormik } from "formik";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
@@ -24,13 +25,23 @@ import { menLevelThree } from "../../../data/category/level-three/menLevelThree"
 import { womenLevelThree } from "../../../data/category/level-three/womenLevelThree";
 import { electronicsLevelThree } from "../../../data/category/level-three/electronicsLevelThree";
 import { homeLevelThree as furnitureLevelThree } from "../../../data/category/level-three/homeLevelThree";
-import { useAppDispatch } from "../../../state/store";
-import { createProduct } from "../../../state/seller/sellerProductSlice";
+import { useAppDispatch, useAppSelector } from "../../../state/store";
+import { updateProduct } from "../../../state/seller/sellerProductSlice";
+import { fetchProductById } from "../../../state/customer/productSlice";
+import { useParams, useNavigate } from "react-router-dom";
 
-const AddProductForm = () => {
+const UpdateProductForm = () => {
   const [uploadImage, setUploadImage] = useState(false);
-
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { productId } = useParams();
+  const { product } = useAppSelector((store) => store);
+
+  useEffect(() => {
+    if (productId) {
+      dispatch(fetchProductById(Number(productId)));
+    }
+  }, [productId, dispatch]);
 
   const formik = useFormik({
     initialValues: {
@@ -45,17 +56,60 @@ const AddProductForm = () => {
       category3: "",
       size: "",
     },
-    onSubmit: (values, { resetForm }) => {
-      dispatch(
-        createProduct({
-          request: values,
-          jwt: localStorage.getItem("jwt") || "",
-        }),
-      );
-      console.log("Product Created", values);
-      resetForm();
+    onSubmit: async (values) => {
+      if (productId) {
+        const payload = {
+          ...values,
+          sizes: values.size, // Map size field correctly to backend sizes field
+        };
+        await dispatch(
+          updateProduct({
+            productId: Number(productId),
+            request: payload,
+          }),
+        );
+        console.log("Product Updated", payload);
+        navigate("/seller/products");
+      }
     },
   });
+
+  useEffect(() => {
+    if (product?.product) {
+      const p = product.product;
+
+      // Determine categories
+      let cat1 = "";
+      let cat2 = "";
+      let cat3 = "";
+
+      if (p.category) {
+        if (p.category.level === 3) {
+          cat3 = p.category.categoryId || "";
+          cat2 = p.category.parentCategory?.categoryId || "";
+          cat1 = p.category.parentCategory?.parentCategory?.categoryId || "";
+        } else if (p.category.level === 2) {
+          cat2 = p.category.categoryId || "";
+          cat1 = p.category.parentCategory?.categoryId || "";
+        } else if (p.category.level === 1) {
+          cat1 = p.category.categoryId || "";
+        }
+      }
+
+      formik.setValues({
+        title: p.title || "",
+        description: p.description || "",
+        mrpPrice: p.mrpPrice ? String(p.mrpPrice) : "",
+        sellingPrice: p.sellingPrice ? String(p.sellingPrice) : "",
+        color: p.color || "",
+        images: p.images || [],
+        category: cat1,
+        category2: cat2,
+        category3: cat3,
+        size: p.sizes || "", // Fallback if stored as single string sizes
+      });
+    }
+  }, [product.product]);
 
   const handleImageChange = async (e: any) => {
     const file = e.target.files[0];
@@ -85,7 +139,14 @@ const AddProductForm = () => {
   };
 
   return (
-    <Box component="form" onSubmit={formik.handleSubmit} sx={{ mt: 3 }}>
+    <Box
+      component="form"
+      onSubmit={formik.handleSubmit}
+      sx={{ mt: 3, p: 3, bgcolor: "white", borderRadius: 2 }}
+    >
+      <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
+        Update Product
+      </Typography>
       <Grid container spacing={2}>
         {/* Image Upload Section */}
         <Grid size={{ xs: 12 }} className="flex flex-wrap gap-5">
@@ -270,7 +331,7 @@ const AddProductForm = () => {
 
         <Grid size={{ xs: 12 }}>
           <Button fullWidth variant="contained" type="submit" sx={{ py: 1.5 }}>
-            Add Product
+            Update Product
           </Button>
         </Grid>
       </Grid>
@@ -278,4 +339,4 @@ const AddProductForm = () => {
   );
 };
 
-export default AddProductForm;
+export default UpdateProductForm;

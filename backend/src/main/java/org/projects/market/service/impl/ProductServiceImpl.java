@@ -33,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
     public Product createProduct(CreateProductRequest req, Seller seller) {
         Category category1 = categoryRepository.findByCategoryId(req.getCategory());
 
-        if(category1==null){
+        if (category1 == null) {
             Category category = new Category();
             category.setCategoryId(req.getCategory());
             category.setLevel(1);
@@ -42,8 +42,7 @@ public class ProductServiceImpl implements ProductService {
 
         Category category2 = categoryRepository.findByCategoryId(req.getCategory2());
 
-
-        if(category2==null){
+        if (category2 == null) {
             Category category = new Category();
             category.setCategoryId(req.getCategory2());
             category.setLevel(2);
@@ -53,8 +52,7 @@ public class ProductServiceImpl implements ProductService {
 
         Category category3 = categoryRepository.findByCategoryId(req.getCategory3());
 
-
-        if(category3==null){
+        if (category3 == null) {
             Category category = new Category();
             category.setCategoryId(req.getCategory3());
             category.setLevel(3);
@@ -81,12 +79,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private int calculateDiscountPercentage(int mrpPrice, int sellingPrice) {
-        if(mrpPrice<=0){
+        if (mrpPrice <= 0) {
             throw new IllegalArgumentException("Actual price must be greater than 0*");
         }
-        double discount = mrpPrice-sellingPrice;
-        double discountPercentage = (discount/100)*100;
-        return (int)discountPercentage;
+        double discount = mrpPrice - sellingPrice;
+        double discountPercentage = (discount / 100) * 100;
+        return (int) discountPercentage;
     }
 
     @Override
@@ -96,15 +94,76 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product updateProduct(Long productId, Product product) throws ProductException {
-        findProductById(productId);
-        product.setId(productId);
+    public Product updateProduct(Long productId, CreateProductRequest req) throws ProductException {
+        Product product = findProductById(productId);
+
+        if (req.getTitle() != null && !req.getTitle().isEmpty()) {
+            product.setTitle(req.getTitle());
+        }
+        if (req.getDescription() != null && !req.getDescription().isEmpty()) {
+            product.setDescription(req.getDescription());
+        }
+        if (req.getColor() != null && !req.getColor().isEmpty()) {
+            product.setColor(req.getColor());
+        }
+        if (req.getSellingPrice() > 0) {
+            product.setSellingPrice(req.getSellingPrice());
+        }
+        if (req.getMrpPrice() > 0) {
+            product.setMrpPrice(req.getMrpPrice());
+        }
+        if (req.getImages() != null && !req.getImages().isEmpty()) {
+            product.setImages(req.getImages());
+        }
+        if (req.getSizes() != null && !req.getSizes().isEmpty()) {
+            product.setSizes(req.getSizes());
+        }
+
+        if (product.getMrpPrice() > 0 && product.getSellingPrice() > 0) {
+            int discountPercentage = calculateDiscountPercentage(product.getMrpPrice(), product.getSellingPrice());
+            product.setDiscountPercent(discountPercentage);
+        }
+
+        // Handle category updates if category info is sent
+        if (req.getCategory() != null && !req.getCategory().isEmpty()) {
+            Category category1 = categoryRepository.findByCategoryId(req.getCategory());
+            if (category1 == null) {
+                Category category = new Category();
+                category.setCategoryId(req.getCategory());
+                category.setLevel(1);
+                category1 = categoryRepository.save(category);
+            }
+
+            Category category2 = categoryRepository.findByCategoryId(req.getCategory2());
+            if (category2 == null && req.getCategory2() != null && !req.getCategory2().isEmpty()) {
+                Category category = new Category();
+                category.setCategoryId(req.getCategory2());
+                category.setLevel(2);
+                category.setParentCategory(category1);
+                category2 = categoryRepository.save(category);
+            }
+
+            Category category3 = categoryRepository.findByCategoryId(req.getCategory3());
+            if (category3 == null && req.getCategory3() != null && !req.getCategory3().isEmpty()) {
+                Category category = new Category();
+                category.setCategoryId(req.getCategory3());
+                category.setLevel(3);
+                category.setParentCategory(category2);
+                category3 = categoryRepository.save(category);
+            }
+
+            if (category3 != null) {
+                product.setCategory(category3);
+            }
+        }
+
         return productRepository.save(product);
     }
 
     @Override
     public Product findProductById(Long productId) throws ProductException {
-        return productRepository.findById(productId).orElseThrow(()-> new ProductException("product not found with id" + productId));
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new ProductException("product not found with id" + productId));
     }
 
     @Override
@@ -114,8 +173,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<Product> getAllProducts(String category, String brand, String colors, String sizes,
-                                        Integer minPrice, Integer maxPrice, Integer minDiscount,
-                                        String sort, String stock, Integer pageNumber) {
+            Integer minPrice, Integer maxPrice, Integer minDiscount,
+            String sort, String stock, Integer pageNumber) {
 
         Specification<Product> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -163,8 +222,10 @@ public class ProductServiceImpl implements ProductService {
         Pageable pageable;
         if (sort != null && !sort.isEmpty()) {
             pageable = switch (sort) {
-                case "price_low" -> PageRequest.of(pageNumber != null ? pageNumber : 0, 10, Sort.by("sellingPrice").ascending());
-                case "price_high" -> PageRequest.of(pageNumber != null ? pageNumber : 0, 10, Sort.by("sellingPrice").descending());
+                case "price_low" ->
+                    PageRequest.of(pageNumber != null ? pageNumber : 0, 10, Sort.by("sellingPrice").ascending());
+                case "price_high" ->
+                    PageRequest.of(pageNumber != null ? pageNumber : 0, 10, Sort.by("sellingPrice").descending());
                 default -> PageRequest.of(pageNumber != null ? pageNumber : 0, 10, Sort.unsorted());
             };
         } else {
