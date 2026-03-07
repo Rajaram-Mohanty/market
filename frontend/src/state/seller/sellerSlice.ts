@@ -21,6 +21,29 @@ export const fetchSellerProfile = createAsyncThunk(
   },
 );
 
+export const becomeSeller = createAsyncThunk<any, any>(
+  "/sellers/becomeSeller",
+  async (sellerData, { rejectWithValue }) => {
+    try {
+      const { formData, navigate } = sellerData;
+      const response = await api.post("/sellers", formData);
+      console.log("become seller", response.data);
+      const jwt = response.data.jwt;
+      if (jwt) {
+        localStorage.setItem("jwt", jwt);
+        localStorage.setItem("role", "ROLE_SELLER");
+        if (navigate) {
+          navigate("/seller");
+        }
+      }
+      return response.data;
+    } catch (error: any) {
+      console.log("error ---", error);
+      return rejectWithValue(error.response?.data || "Failed to create seller");
+    }
+  },
+);
+
 interface SellerState {
   sellers: any[];
   selectedSeller: any;
@@ -54,6 +77,19 @@ const sellerSlice = createSlice({
     builder.addCase(fetchSellerProfile.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error;
+    });
+
+    builder.addCase(becomeSeller.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(becomeSeller.fulfilled, (state, action) => {
+      state.loading = false;
+      state.profile = action.payload; // Store the newly created seller profile, if applicable
+    });
+    builder.addCase(becomeSeller.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
     });
   },
 });

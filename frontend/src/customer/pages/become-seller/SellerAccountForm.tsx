@@ -1,10 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Stepper, Step, StepLabel, Button } from "@mui/material";
 import BecomeSellerFormStep1 from "./BecomeSellerFormStep1";
 import BecomeSellerFormStep2 from "./BecomeSellerFormStep2";
 import BecomeSellerFormStep3 from "./BecomeSellerFormStep3";
 import BecomeSellerFormStep4 from "./BecomeSellerFormStep4";
 import { useFormik } from "formik";
+import { useAppDispatch } from "../../../state/store";
+import { becomeSeller } from "../../../state/seller/sellerSlice";
 
 const steps = [
   "Tax Details & Mobile",
@@ -15,6 +18,8 @@ const steps = [
 
 const SellerAccountForm = () => {
   const [activeStep, setActiveStep] = useState(0);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues: {
@@ -41,6 +46,7 @@ const SellerAccountForm = () => {
     },
     onSubmit: (values) => {
       console.log("Form Submitted", values);
+      dispatch(becomeSeller({ formData: values, navigate }));
     },
   });
 

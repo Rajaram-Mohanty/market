@@ -15,6 +15,14 @@ import org.projects.market.service.SellerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.projects.market.config.JwtProvider;
+import org.projects.market.domain.USER_ROLE;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import java.util.ArrayList;
 
 import java.util.List;
 
@@ -27,7 +35,7 @@ public class SellerController {
     private final AuthService authService;
     private final VerificationCodeRepository verificationCodeRepository;
     private final SellerReportService sellerReportService;
-
+    private final JwtProvider jwtProvider;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> loginSeller(@RequestBody LoginRequest request) throws Exception {
@@ -53,9 +61,23 @@ public class SellerController {
     }
 
     @PostMapping
-    public ResponseEntity<Seller> createSeller(@RequestBody Seller seller) throws Exception {
+    public ResponseEntity<AuthResponse> createSeller(@RequestBody Seller seller) throws Exception {
         Seller savedSeller = sellerService.createSeller(seller);
-        return new ResponseEntity<>(savedSeller, HttpStatus.CREATED);
+
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(USER_ROLE.ROLE_SELLER.toString()));
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(seller.getEmail(), null, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String jwt = jwtProvider.generateToken(authentication);
+
+        AuthResponse authResponse = new AuthResponse();
+        authResponse.setJwt(jwt);
+        authResponse.setMessage("Register Success");
+        authResponse.setRole(USER_ROLE.ROLE_SELLER);
+
+        return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
@@ -85,7 +107,8 @@ public class SellerController {
     }
 
     @PatchMapping
-    public ResponseEntity<Seller> updateSeller(@RequestHeader("Authorization") String jwt, @RequestBody Seller seller) throws Exception {
+    public ResponseEntity<Seller> updateSeller(@RequestHeader("Authorization") String jwt, @RequestBody Seller seller)
+            throws Exception {
         Seller profile = sellerService.getSellerProfile(jwt);
         Seller updatedSeller = sellerService.updateSeller(profile.getId(), seller);
         return new ResponseEntity<>(updatedSeller, HttpStatus.OK);

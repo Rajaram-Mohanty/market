@@ -1,17 +1,21 @@
 import { TextField, Button } from "@mui/material";
 import { useFormik } from "formik";
-import { useAppDispatch } from "../../../state/store";
+import { useAppDispatch, useAppSelector } from "../../../state/store";
 import { sendLoginSignupOtp } from "../../../state/authSlice";
 import { sellerLogin } from "../../../state/seller/sellerAuthSlice";
+import { useNavigate } from "react-router-dom";
+import { CircularProgress } from "@mui/material";
 
 const SellerLoginForm = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { auth } = useAppSelector((store) => store);
 
   const formik = useFormik({
     initialValues: { email: "", otp: "" },
     onSubmit: (values) => {
       console.log("Login Values", values);
-      dispatch(sellerLogin({ email: values.email, otp: values.otp }));
+      dispatch(sellerLogin({ email: values.email, otp: values.otp, navigate }));
     },
   });
 
@@ -36,7 +40,7 @@ const SellerLoginForm = () => {
           helperText={formik.touched.email && formik.errors.email}
         />
 
-        {true && (
+        {auth.otpSent && (
           <div className="space-y-2">
             <p className="font-medium text-sm opacity-60">
               Enter OTP sent to your email
@@ -53,23 +57,25 @@ const SellerLoginForm = () => {
           </div>
         )}
 
-        <Button
-          fullWidth
-          variant="contained"
-          sx={{ py: "11px", my: 2 }}
-          onClick={handleSendOtp}
-        >
-          Send OTP
-        </Button>
-
-        <Button
-          onClick={() => formik.handleSubmit()}
-          fullWidth
-          variant="contained"
-          sx={{ py: "11px", my: 2 }}
-        >
-          Login
-        </Button>
+        {auth.otpSent ? (
+          <Button
+            onClick={() => formik.handleSubmit()}
+            fullWidth
+            variant="contained"
+            sx={{ py: "11px", my: 2 }}
+          >
+            Login
+          </Button>
+        ) : (
+          <Button
+            fullWidth
+            variant="contained"
+            sx={{ py: "11px", my: 2 }}
+            onClick={handleSendOtp}
+          >
+            {auth.loading ? <CircularProgress /> : "Send OTP"}
+          </Button>
+        )}
       </div>
     </div>
   );
