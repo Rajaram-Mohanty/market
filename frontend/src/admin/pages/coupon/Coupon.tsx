@@ -175,6 +175,7 @@ const Coupon = () => {
                 </StyledTableCell>
                 <StyledTableCell align="center">Discount</StyledTableCell>
                 <StyledTableCell align="center">Status</StyledTableCell>
+                <StyledTableCell align="center">Update</StyledTableCell>
                 <StyledTableCell align="center">Delete</StyledTableCell>
               </TableRow>
             </TableHead>
@@ -203,6 +204,8 @@ const Coupon = () => {
                     <IconButton onClick={() => handleEditClick(item)}>
                       <EditIcon color="primary" />
                     </IconButton>
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
                     <IconButton onClick={() => handleDelete(item.id)}>
                       <DeleteIcon sx={{ color: "red" }} />
                     </IconButton>

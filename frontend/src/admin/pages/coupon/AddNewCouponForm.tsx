@@ -4,8 +4,12 @@ import dayjs from "dayjs";
 import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { useAppDispatch } from "../../../state/store";
+import { createCoupon } from "../../../state/admin/adminCouponSlice";
 
 const AddNewCouponForm = () => {
+  const dispatch = useAppDispatch();
+  const jwt = localStorage.getItem("jwt") || "";
   const formik = useFormik({
     initialValues: {
       code: "",
@@ -14,7 +18,7 @@ const AddNewCouponForm = () => {
       validityEndDate: null,
       minimumOrderValue: 0,
     },
-    onSubmit: (values) => {
+    onSubmit: (values, { resetForm }) => {
       const formattedValues = {
         ...values,
         validityStartDate: values.validityStartDate
@@ -25,86 +29,89 @@ const AddNewCouponForm = () => {
           : null,
       };
       console.log("formatted values", formattedValues);
+      dispatch(createCoupon({ coupon: formattedValues, jwt }));
+      resetForm();
     },
   });
 
   return (
-
     <div>
-      <h1 className="text-2xl font-bold text-primary-color pb-5 text-center"> Create New Coupon</h1>
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box component="form" onSubmit={formik.handleSubmit} sx={{ mt: 3 }}>
+      <h1 className="text-2xl font-bold text-primary-color pb-5 text-center">
+        {" "}
+        Create New Coupon
+      </h1>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Box component="form" onSubmit={formik.handleSubmit} sx={{ mt: 3 }}>
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                name="code"
+                label="Coupon Code"
+                value={formik.values.code}
+                onChange={formik.handleChange}
+                error={formik.touched.code && Boolean(formik.errors.code)}
+                helperText={formik.touched.code && formik.errors.code}
+              />
+            </Grid>
 
-        <Grid container spacing={2}>
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField
-              fullWidth
-              name="code"
-              label="Coupon Code"
-              value={formik.values.code}
-              onChange={formik.handleChange}
-              error={formik.touched.code && Boolean(formik.errors.code)}
-              helperText={formik.touched.code && formik.errors.code}
-            />
-          </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                name="discountPercentage"
+                label="Coupon Discount Percentage"
+                type="number"
+                value={formik.values.discountPercentage}
+                onChange={formik.handleChange}
+              />
+            </Grid>
 
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField
-              fullWidth
-              name="discountPercentage"
-              label="Coupon Discount Percentage"
-              type="number"
-              value={formik.values.discountPercentage}
-              onChange={formik.handleChange}
-            />
-          </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <DatePicker
+                sx={{ width: "100%" }}
+                label="Validity Start Date"
+                value={formik.values.validityStartDate}
+                onChange={(newValue) =>
+                  formik.setFieldValue("validityStartDate", newValue)
+                }
+              />
+            </Grid>
 
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <DatePicker
-              sx={{ width: "100%" }}
-              label="Validity Start Date"
-              value={formik.values.validityStartDate}
-              onChange={(newValue) =>
-                formik.setFieldValue("validityStartDate", newValue)
-              }
-            />
-          </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <DatePicker
+                sx={{ width: "100%" }}
+                label="Validity End Date"
+                value={formik.values.validityEndDate}
+                onChange={(newValue) =>
+                  formik.setFieldValue("validityEndDate", newValue)
+                }
+              />
+            </Grid>
 
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <DatePicker
-              sx={{ width: "100%" }}
-              label="Validity End Date"
-              value={formik.values.validityEndDate}
-              onChange={(newValue) =>
-                formik.setFieldValue("validityEndDate", newValue)
-              }
-            />
-          </Grid>
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                name="minimumOrderValue"
+                label="Minimum Order Value"
+                type="number"
+                value={formik.values.minimumOrderValue}
+                onChange={formik.handleChange}
+              />
+            </Grid>
 
-          <Grid size={{ xs: 12 }}>
-            <TextField
-              fullWidth
-              name="minimumOrderValue"
-              label="Minimum Order Value"
-              type="number"
-              value={formik.values.minimumOrderValue}
-              onChange={formik.handleChange}
-            />
+            <Grid size={{ xs: 12 }}>
+              <Button
+                fullWidth
+                variant="contained"
+                type="submit"
+                sx={{ py: "0.8rem" }}
+              >
+                Create Coupon
+              </Button>
+            </Grid>
           </Grid>
-
-          <Grid size={{ xs: 12 }}>
-            <Button
-              fullWidth
-              variant="contained"
-              type="submit"
-              sx={{ py: "0.8rem" }}
-            >
-              Create Coupon
-            </Button>
-          </Grid>
-        </Grid>
-      </Box>
-    </LocalizationProvider>
+        </Box>
+      </LocalizationProvider>
     </div>
   );
 };
