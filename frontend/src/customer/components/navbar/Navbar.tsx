@@ -25,6 +25,9 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { auth } = useAppSelector((store) => store);
 
+  const isLoggedIn =
+    auth.isLoggedIn || !!auth.user || !!localStorage.getItem("jwt");
+
   return (
     <div>
       <Box
@@ -67,7 +70,7 @@ const Navbar = () => {
             <IconButton>
               <SearchIcon />
             </IconButton>
-            {auth.user ? (
+            {isLoggedIn ? (
               <Button
                 onClick={() => navigate("/account/orders")}
                 className="flex items-center gap-2"
@@ -77,7 +80,7 @@ const Navbar = () => {
                   src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80"
                 />
                 <h1 className="font-semibold hidden lg:block">
-                  {auth.user?.fullName}
+                  {auth.user?.fullName || "Account"}
                 </h1>
               </Button>
             ) : (

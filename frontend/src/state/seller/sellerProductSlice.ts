@@ -30,7 +30,7 @@ export const createProduct = createAsyncThunk<
 >("sellerProduct/createProduct", async (args, { rejectWithValue }) => {
   const { request, jwt } = args;
   try {
-    const response = await api.post("seller/products", request, {
+    const response = await api.post("/seller/products", request, {
       headers: {
         Authorization: `Bearer ${jwt}`,
       },
