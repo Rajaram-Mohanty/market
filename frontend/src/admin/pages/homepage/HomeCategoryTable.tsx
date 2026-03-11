@@ -89,10 +89,12 @@ export default function HomeCategoryTable({
   // Edit fields
   const [editCategoryId, setEditCategoryId] = useState("");
   const [editImage, setEditImage] = useState("");
+  const [editName, setEditName] = useState("");
 
   // Create fields
   const [createCategoryId, setCreateCategoryId] = useState("");
   const [createImage, setCreateImage] = useState("");
+  const [createName, setCreateName] = useState("");
 
   const handleImageChange = async (e: any) => {
     const file = e.target.files[0];
@@ -115,6 +117,7 @@ export default function HomeCategoryTable({
     setSelectedCategory(category);
     setEditCategoryId(category.categoryId);
     setEditImage(category.image);
+    setEditName(category.name || "");
     setOpen(true);
   };
 
@@ -127,13 +130,14 @@ export default function HomeCategoryTable({
     setOpenCreate(false);
     setCreateCategoryId("");
     setCreateImage("");
+    setCreateName("");
   };
 
   const handleCreate = () => {
     const newCategory = {
       categoryId: createCategoryId,
       image: createImage,
-      name: "",
+      name: createName,
       section: sectionName || "GRID", // fallback
     };
 
@@ -149,6 +153,7 @@ export default function HomeCategoryTable({
         ...selectedCategory,
         categoryId: editCategoryId,
         image: editImage,
+        name: editName,
       };
       dispatch(
         updateHomeCategory({ id: selectedCategory.id, data: updatedData }),
@@ -185,7 +190,8 @@ export default function HomeCategoryTable({
               <StyledTableCell align="center">No.</StyledTableCell>
               <StyledTableCell align="center">Id</StyledTableCell>
               <StyledTableCell align="center">Image</StyledTableCell>
-              <StyledTableCell align="center">Category</StyledTableCell>
+              <StyledTableCell align="center">Name</StyledTableCell>
+              <StyledTableCell align="center">Category Id</StyledTableCell>
               <StyledTableCell align="center">Update</StyledTableCell>
               <StyledTableCell align="center">Delete</StyledTableCell>
             </TableRow>
@@ -205,6 +211,9 @@ export default function HomeCategoryTable({
                       alt=""
                     />
                   </div>
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  {category.name}
                 </StyledTableCell>
                 <StyledTableCell align="center">
                   {category.categoryId}
@@ -228,6 +237,14 @@ export default function HomeCategoryTable({
         <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
           <DialogTitle>Update Home Category</DialogTitle>
           <DialogContent>
+            <TextField
+              margin="dense"
+              label="Name"
+              fullWidth
+              variant="outlined"
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+            />
             <TextField
               margin="dense"
               label="Category ID"
@@ -262,6 +279,14 @@ export default function HomeCategoryTable({
         >
           <DialogTitle>Add New Home Category</DialogTitle>
           <DialogContent>
+            <TextField
+              margin="dense"
+              label="Name"
+              fullWidth
+              variant="outlined"
+              value={createName}
+              onChange={(e) => setCreateName(e.target.value)}
+            />
             <TextField
               margin="dense"
               label="Category ID (e.g. mens_shirts)"

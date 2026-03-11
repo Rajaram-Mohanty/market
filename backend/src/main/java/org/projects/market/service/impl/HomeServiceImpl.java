@@ -37,21 +37,8 @@ public class HomeServiceImpl implements HomeService {
                 .filter(category -> category.getSection() == HomeCategorySection.DEALS)
                 .collect(Collectors.toList());
 
-        // Handle the creation and fetching of Deals
-        List<Deal> createdDeals;
-
-        if (dealRepository.findAll().isEmpty()) {
-            List<Deal> deals = dealCategories.stream()
-                    .map(category -> {
-                        Deal deal = new Deal();
-                        deal.setCategory(category);
-                        deal.setDiscount(10); // Default discount
-                        return deal;
-                    }).collect(Collectors.toList());
-            createdDeals = dealRepository.saveAll(deals);
-        } else {
-            createdDeals = dealRepository.findAll();
-        }
+        // Handle the fetching of Deals
+        List<Deal> createdDeals = dealRepository.findAll();
 
         // Combine all lists into a single Home object
         Home home = new Home();

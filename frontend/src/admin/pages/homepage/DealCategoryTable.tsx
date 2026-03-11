@@ -8,7 +8,10 @@ const DealCategoryTable = () => {
 
   return (
     <div>
-      <HomeCategoryTable data={home.homePageData?.dealCategories || []} />
+      <HomeCategoryTable
+        data={home.homePageData?.dealCategories || []}
+        sectionName="DEALS"
+      />
     </div>
   );
 };
