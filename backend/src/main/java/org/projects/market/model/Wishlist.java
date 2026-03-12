@@ -1,5 +1,6 @@
 package org.projects.market.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,6 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Wishlist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

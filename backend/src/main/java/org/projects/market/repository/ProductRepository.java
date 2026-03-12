@@ -1,6 +1,9 @@
 package org.projects.market.repository;
 
 import org.projects.market.model.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -11,10 +14,22 @@ import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
-    @EntityGraph(attributePaths = {"images", "category"})
+    // Simple pageable listing with proactive fetch of seller and pickupAddress
+    @Override
+    @EntityGraph(attributePaths = {"images", "category", "seller", "seller.pickupAddress"})
+    Page<Product> findAll(Pageable pageable);
+
+    // Specification-based listing with the same graph
+    @Override
+    @EntityGraph(attributePaths = {"images", "category", "seller", "seller.pickupAddress"})
+    Page<Product> findAll(Specification<Product> spec, Pageable pageable);
+
+    // Seller-specific products with nested seller data
+    @EntityGraph(attributePaths = {"images", "category", "seller", "seller.pickupAddress"})
     List<Product> findBySellerId(Long Id);
 
-    @EntityGraph(attributePaths = {"images", "category"})
+    // Search with the same graph
+    @EntityGraph(attributePaths = {"images", "category", "seller", "seller.pickupAddress"})
     @Query("SELECT p FROM Product p WHERE " +
             "(:query IS NULL OR LOWER(p.title) " +
             "LIKE LOWER(CONCAT('%', :query, '%'))) " +
@@ -22,3 +37,4 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
             "LIKE LOWER(CONCAT('%', :query, '%')))")
     List<Product> searchProduct(@Param("query") String query);
 }
+

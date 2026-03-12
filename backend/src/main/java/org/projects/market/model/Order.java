@@ -1,5 +1,6 @@
 package org.projects.market.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.projects.market.domain.OrderStatus;
@@ -16,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @EqualsAndHashCode
 @Table(name = "orders")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Order {
 
     @Id

@@ -1,5 +1,6 @@
 package org.projects.market.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,6 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

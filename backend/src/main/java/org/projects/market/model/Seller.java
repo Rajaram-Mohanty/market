@@ -1,5 +1,7 @@
 package org.projects.market.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.projects.market.domain.AccountStatus;
@@ -11,6 +13,7 @@ import org.projects.market.domain.USER_ROLE;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Seller {
 
     @Id
@@ -24,6 +27,7 @@ public class Seller {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Embedded
@@ -44,3 +48,4 @@ public class Seller {
     private AccountStatus accountStatus = AccountStatus.PENDING_VERIFICATION;
 
 }
+
