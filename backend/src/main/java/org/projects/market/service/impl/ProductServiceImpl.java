@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -161,9 +162,17 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Product findProductById(Long productId) throws ProductException {
-        return productRepository.findById(productId)
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductException("product not found with id" + productId));
+
+        // Initialize lazy images while the session is open
+        if (product.getImages() != null) {
+            product.getImages().size();
+        }
+
+        return product;
     }
 
     @Override
@@ -172,6 +181,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Product> getAllProducts(String category, String brand, String colors, String sizes,
             Integer minPrice, Integer maxPrice, Integer minDiscount,
             String sort, String stock, Integer pageNumber) {
@@ -180,7 +190,7 @@ public class ProductServiceImpl implements ProductService {
             List<Predicate> predicates = new ArrayList<>();
 
             // Filtering by Category [07:58:04]
-            if (category != null) {
+            if (category != null && !category.isBlank()) {
                 Join<Product, Category> categoryJoin = root.join("category");
                 predicates.add(criteriaBuilder.equal(categoryJoin.get("categoryId"), category));
             }
@@ -232,7 +242,16 @@ public class ProductServiceImpl implements ProductService {
             pageable = PageRequest.of(pageNumber != null ? pageNumber : 0, 10, Sort.unsorted());
         }
 
-        return productRepository.findAll(spec, pageable);
+        Page<Product> page = productRepository.findAll(spec, pageable);
+
+        // Initialize lazy-loaded images collection within the transaction
+        page.getContent().forEach(p -> {
+            if (p.getImages() != null) {
+                p.getImages().size();
+            }
+        });
+
+        return page;
     }
 
     @Override

@@ -96,6 +96,7 @@ const productSlice = createSlice({
       .addCase(fetchAllProducts.fulfilled, (state, action) => {
         state.loading = false;
         state.products = action.payload.content;
+        state.totalPages = action.payload.totalPages ?? 1;
       })
       .addCase(fetchAllProducts.rejected, (state, action) => {
         state.loading = false;

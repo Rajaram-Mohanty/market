@@ -16,12 +16,12 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
     // Simple pageable listing with proactive fetch of seller and pickupAddress
     @Override
-    @EntityGraph(attributePaths = {"images", "category", "seller", "seller.pickupAddress"})
+    @EntityGraph(attributePaths = {"category", "seller", "seller.pickupAddress"})
     Page<Product> findAll(Pageable pageable);
 
     // Specification-based listing with the same graph
     @Override
-    @EntityGraph(attributePaths = {"images", "category", "seller", "seller.pickupAddress"})
+    @EntityGraph(attributePaths = {"category", "seller", "seller.pickupAddress"})
     Page<Product> findAll(Specification<Product> spec, Pageable pageable);
 
     // Seller-specific products with nested seller data

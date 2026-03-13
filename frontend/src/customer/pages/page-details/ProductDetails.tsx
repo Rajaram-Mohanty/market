@@ -57,7 +57,7 @@ const ProductDetails = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
         <section className="flex flex-col lg:flex-row gap-5">
           <div className="w-full lg:w-[15%] flex flex-wrap lg:flex-col gap-3">
-            {product.product?.images.map((item, index) => (
+            {product.product?.images?.map((item, index) => (
               <img
                 key={index}
                 onClick={() => handleActiveImage(index)}
@@ -70,7 +70,7 @@ const ProductDetails = () => {
           <div className="w-full lg:w-[85%]">
             <img
               className="w-full rounded-md"
-              src={product.product?.images[activeImage]}
+              src={product.product?.images?.[activeImage]}
               alt=""
             />
           </div>

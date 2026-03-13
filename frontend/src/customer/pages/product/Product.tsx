@@ -26,7 +26,7 @@ const Product = () => {
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
   const { category } = useParams();
-  const {product}=useAppSelector(store => store);
+  const { product } = useAppSelector((store) => store);
 
 
   const handlesortChange = (event: any) => {
@@ -38,28 +38,35 @@ const Product = () => {
   };
 
   useEffect(() => {
+    setPage(1);
+  }, [category]);
+
+  useEffect(() => {
     const [minPrice, maxPrice] = searchParams.get("price")?.split("-") || [];
 
-    const color = searchParams.get("color")
-    const minDiscount=searchParams.get("discount")?Number(searchParams.get("discount")):undefined
-    const pageNumber=page-1
-    const newFilter={
-      color:color || "",
-      minPrice:minPrice?Number(minPrice):undefined,
+    const color = searchParams.get("color");
+    const minDiscount = searchParams.get("discount")
+      ? Number(searchParams.get("discount"))
+      : undefined;
+    const pageNumber = page - 1;
+
+    const newFilter = {
+      category: category && category !== "undefined" ? category : undefined,
+      color: color || "",
+      minPrice: minPrice ? Number(minPrice) : undefined,
+      maxPrice: maxPrice ? Number(maxPrice) : undefined,
       minDiscount,
       pageNumber,
       sort,
-    }
-
+    };
 
     dispatch(fetchAllProducts(newFilter));
-  }, [category, searchParams]);
+  }, [category, searchParams, page, sort, dispatch]);
 
   return (
     <div className="-z-10 mt-10">
       <h1 className="tet-3xl text-center  font-bold text-gray-700 pb-5 px-9 uppercase space-x-2">
-        {" "}
-        women sarees
+        {category ? category.replace(/-/g, " ") : "Products"}
       </h1>
       <div className="lg:flex">
         <section className="filter_section hidder lg:block w-[20%]">
@@ -100,14 +107,15 @@ const Product = () => {
           <Divider />
           <section className="product_section grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-5 px-5 justify-center">
             {product.products.map((item: any) => (
-              <ProductCard item={item}/>
+              <ProductCard key={item.id} item={item} />
             ))}
           </section>
 
           <div className="flex justify-center py-10">
             <Pagination
               onChange={(e, value) => handlePageChange(value)}
-              count={10}
+              page={page}
+              count={product.totalPages || 1}
               variant="outlined"
               color="primary"
             />
