@@ -23,8 +23,11 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   const role =
     localStorage.getItem("role") || auth.user?.role || seller.profile?.role;
 
+  const normalizedRole =
+    role === "ROLE_COSTUMER" ? "ROLE_CUSTOMER" : (role as string | null);
+
   // If role is still loading via Redux and not in localStorage yet, show loader
-  if (!role) {
+  if (!normalizedRole) {
     return (
       <Box
         display="flex"
@@ -39,13 +42,14 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
 
   const roleHierarchy: Record<string, number> = {
     ROLE_CUSTOMER: 1,
+    ROLE_COSTUMER: 1,
     ROLE_SELLER: 2,
     ROLE_ADMIN: 3,
   };
 
   if (allowedRoles && allowedRoles.length > 0) {
     // Check if the user's role is sufficient for any of the allowed roles
-    const userRoleValue = roleHierarchy[role] || 0;
+    const userRoleValue = roleHierarchy[normalizedRole] || 0;
     const isAllowed = allowedRoles.some((allowedRole) => {
       const allowedRoleValue = roleHierarchy[allowedRole] || 0;
       return userRoleValue >= allowedRoleValue;
@@ -53,9 +57,9 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
 
     if (!isAllowed) {
       // Priority diversion based on existing role
-      if (role === "ROLE_SELLER") {
+      if (normalizedRole === "ROLE_SELLER") {
         return <Navigate to="/seller" replace />;
-      } else if (role === "ROLE_ADMIN") {
+      } else if (normalizedRole === "ROLE_ADMIN") {
         return <Navigate to="/admin" replace />;
       } else {
         // Default fallback for customer or any other unknown role

@@ -14,13 +14,20 @@ const Wishlist = () => {
     <div className="h-85vh p-5 lg:p-20">
       <section>
         <h1 className="text-2xl font-semibold">
-          <strong>My wishlist</strong> 5 items
+          <strong>My wishlist</strong>{" "}
+          {wishlist?.wishlist?.products?.length
+            ? `${wishlist.wishlist.products.length} items`
+            : "0 items"}
         </h1>
 
         <div>
-          {wishlist?.wishlist?.products.map((item) => (
-            <WishlistProductCard item={item} />
-          ))}
+          {wishlist?.wishlist?.products?.length ? (
+            wishlist.wishlist.products.map((item) => (
+              <WishlistProductCard key={item.id} item={item} />
+            ))
+          ) : (
+            <p className="text-gray-500 mt-4">Your wishlist is empty.</p>
+          )}
         </div>
       </section>
     </div>

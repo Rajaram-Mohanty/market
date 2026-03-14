@@ -22,6 +22,13 @@ public class CartServiceImpl implements CartService {
     public Cart findUserCart(User user) {
         Cart cart = cartRepository.findByUserId(user.getId());
 
+        // If the user has no cart yet (e.g. seller/admin), create an empty one
+        if (cart == null) {
+            cart = new Cart();
+            cart.setUser(user);
+            return cartRepository.save(cart);
+        }
+
         // Calculate total price and total items dynamically [09:08:20]
         int totalPrice = 0;
         int totalDiscountedPrice = 0;
@@ -37,7 +44,6 @@ public class CartServiceImpl implements CartService {
         cart.setTotalItem(totalItem);
         cart.setTotalSellingPrice(totalDiscountedPrice);
         cart.setDiscount(calculateDiscountPercentage(totalPrice, totalDiscountedPrice));
-        cart.setTotalItem(totalItem);
 
         return cart;
     }
