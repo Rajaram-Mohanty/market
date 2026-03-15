@@ -5,24 +5,26 @@ import { fetchAllProducts } from "../../../state/customer/productSlice";
 
 const SimilarProduct = () => {
   const dispatch = useAppDispatch();
-  const { product } = useAppSelector((state) => state.product);
+  const { product, products } = useAppSelector((state) => state.product);
 
   useEffect(() => {
-    if (product?.category?.name) {
+    if (product?.category?.categoryId) {
       dispatch(
         fetchAllProducts({
-          category: product.category.name,
+          category: product.category.categoryId,
           pageNumber: 0,
         }),
       );
     }
-  }, [dispatch, product?.category?.name]);
+  }, [dispatch, product?.category?.categoryId]);
 
-  const products = useAppSelector((state) => state.product.products);
+  const viewableProducts = products
+    .filter((item) => item.id !== product?.id)
+    .slice(0, 6);
 
   return (
-    <div className="grid lg:grid-cols-6 md:grid-cols-4 sm:grid-cols-2 grid-cols-1 justify-between gap-4 gap-y-8">
-      {products.slice(0, 6).map((item) => (
+    <div className="grid lg:grid-cols-5 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 justify-between gap-7 gap-y-8 py-5">
+      {viewableProducts.map((item) => (
         <ProductCard key={item.id} item={item} />
       ))}
     </div>

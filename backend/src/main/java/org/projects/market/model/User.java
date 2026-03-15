@@ -4,7 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.projects.market.domain.USER_ROLE;
 
 import java.util.HashSet;
@@ -15,11 +19,12 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // @JsonProperty(access = Access.WRITE_ONLY): Creates a
@@ -30,13 +35,13 @@ public class User {
 
     private String email;
 
-    private String FullName;
+    private String fullName;
 
     private String mobile;
 
     private USER_ROLE role = USER_ROLE.ROLE_COSTUMER;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<Address> addresses = new HashSet<>();
 
     @ManyToMany

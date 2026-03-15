@@ -3,9 +3,11 @@ import { useAppDispatch } from "../../state/store";
 import { Close } from "@mui/icons-material";
 import { teal } from "@mui/material/colors";
 import { addProductToWishlist } from "../../state/customer/wishlistSlice";
+import { useNavigate } from "react-router-dom";
 
 const WishlistProductCard = ({ item }: { item: Product }) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const handleRemoveFromWishlist = (e: any) => {
     // Uses addProductToWishlist because the backend toggles (adds/removes) the item.
@@ -14,7 +16,14 @@ const WishlistProductCard = ({ item }: { item: Product }) => {
   };
 
   return (
-    <div className="w-60 relative">
+    <div
+      onClick={() =>
+        navigate(
+          `/product-details/${item.category?.categoryId}/${item.title}/${item.id}`,
+        )
+      }
+      className="w-60 relative cursor-pointer"
+    >
       <div className="w-full h-80">
         <img src={item.images[0]} className="object-top w-full" alt="" />
       </div>

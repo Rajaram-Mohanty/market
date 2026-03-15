@@ -6,10 +6,14 @@ import {
   Radio,
   RadioGroup,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AddressCard from "./AddressCard";
 import AddressForm from "./AddressForm";
 import PricingCard from "../pages/cart/PricingCard";
+import { useAppDispatch, useAppSelector } from "../../state/store";
+import { fetchUserProfile } from "../../state/authSlice";
+import { createOrder } from "../../state/customer/orderSlice";
+import { fetchUserCart } from "../../state/customer/cartSlice";
 
 const style = {
   position: "absolute",
@@ -23,13 +27,51 @@ const style = {
 };
 
 const Checkout = () => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [paymentGateway, setPaymentGateway] = React.useState("RAZORPAY");
+  const [paymentGateway, setPaymentGateway] = useState("RAZORPAY");
+  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
+    null,
+  );
 
-  const handlePaymentChange = (e:any) => {
+  const dispatch = useAppDispatch();
+  const { user, jwt } = useAppSelector((state) => state.auth);
+  const { loading } = useAppSelector((state) => state.order);
+
+  useEffect(() => {
+    if (!user && jwt) {
+      dispatch(fetchUserProfile({ jwt }));
+    }
+  }, [user, jwt, dispatch]);
+
+  useEffect(() => {
+    if (jwt) {
+      dispatch(fetchUserCart(jwt));
+    }
+  }, [jwt, dispatch]);
+
+  const handlePaymentChange = (e: any) => {
     setPaymentGateway(e.target.value);
+  };
+
+  const handleCheckout = () => {
+    if (selectedAddressId) {
+      const address = user?.addresses.find(
+        (item) => item.id === selectedAddressId,
+      );
+      if (address) {
+        dispatch(
+          createOrder({
+            address,
+            jwt: jwt || "",
+            paymentGateway: paymentGateway,
+          }),
+        );
+      }
+    } else {
+      alert("Please select a shipping address");
+    }
   };
 
   const paymentGatewayList=[
@@ -58,14 +100,21 @@ const Checkout = () => {
             <div className="text-xs font-medium space-y-5">
               <p>Saved Addresses</p>
               <div className="space-y-3">
-                {[1, 1, 1].map((item) => (
-                  <AddressCard />
-                ))}
+                {user?.addresses?.length ? (
+                  user.addresses.map((addr) => (
+                    <AddressCard
+                      key={addr.id}
+                      address={addr}
+                      selected={selectedAddressId === addr.id}
+                      onSelect={() => setSelectedAddressId(addr.id ?? null)}
+                    />
+                  ))
+                ) : (
+                  <p className="text-gray-500 text-xs">
+                    No saved addresses found. Please add a new address.
+                  </p>
+                )}
               </div>
-            </div>
-
-            <div className="py-4 px-5 rounded-md border">
-              <Button onClick={handleOpen}>Add New Address</Button>
             </div>
           </div>
 
@@ -98,8 +147,14 @@ const Checkout = () => {
               
               <div className="p-5 border rounded-md mt-1">
               <PricingCard />
-                <Button fullWidth variant="contained" sx={{ py: "11px" }}>
-                  Checkout
+                <Button
+                  onClick={handleCheckout}
+                  fullWidth
+                  variant="contained"
+                  sx={{ py: "11px" }}
+                  disabled={loading}
+                >
+                  {loading ? "Processing..." : "Checkout"}
                 </Button>
               </div>
             </div>
@@ -113,7 +168,7 @@ const Checkout = () => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <AddressForm paymentGateway={paymentGateway}/>
+          <AddressForm handleClose={handleClose}/>
         </Box>
       </Modal>
     </>

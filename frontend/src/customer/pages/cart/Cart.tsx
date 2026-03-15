@@ -7,6 +7,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../state/store";
 import { fetchUserCart } from "../../../state/customer/cartSlice";
+import { applyCoupon } from "../../../state/customer/couponSlice";
 
 const Cart = () => {
   const [couponCode, setCouponCode] = useState("");
@@ -25,14 +26,25 @@ const Cart = () => {
   };
 
   const handleApplyCoupon = () => {
-    console.log("Applying coupon:", couponCode);
-    // Logic for API integration will go here
-    setIsCouponApplied(true);
+    dispatch(
+      applyCoupon({
+        apply: "true",
+        code: couponCode,
+        orderValue: cart.cart?.totalSellingPrice || 0,
+        jwt: localStorage.getItem("jwt") || "",
+      }),
+    );
   };
 
   const handleRemoveCoupon = () => {
-    setIsCouponApplied(false);
-    setCouponCode("");
+    dispatch(
+      applyCoupon({
+        apply: "false",
+        code: couponCode,
+        orderValue: cart.cart?.totalSellingPrice || 0,
+        jwt: localStorage.getItem("jwt") || "",
+      }),
+    );
   };
 
   return (
@@ -56,7 +68,7 @@ const Cart = () => {
               <span>Apply Coupons</span>
             </div>
 
-            {!isCouponApplied ? (
+            {!cart.cart?.couponCode ? (
               <div className="flex justify-between items-center">
                 <TextField
                   onChange={handleCouponChange}
@@ -72,7 +84,7 @@ const Cart = () => {
             ) : (
               <div className="flex items-center gap-2 bg-teal-50 px-5 py-1 rounded-md border border-dashed border-teal-400">
                 <span className="font-medium text-teal-700">
-                  {couponCode} Applied
+                  {cart.cart?.couponCode} Applied
                 </span>
                 <IconButton
                   onClick={handleRemoveCoupon}

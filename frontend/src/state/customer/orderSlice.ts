@@ -59,8 +59,8 @@ export const createOrder = createAsyncThunk<
         headers: { Authorization: `Bearer ${jwt}` },
         params: { paymentMethod: paymentGateway },
       });
-      if (response.data.paymentLinkUrl) {
-        window.location.href = response.data.paymentLinkUrl;
+      if (response.data.payment_link_url) {
+        window.location.href = response.data.payment_link_url;
       }
       return response.data;
     } catch (error: any) {

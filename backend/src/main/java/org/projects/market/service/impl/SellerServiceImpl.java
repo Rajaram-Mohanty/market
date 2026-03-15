@@ -23,7 +23,6 @@ public class SellerServiceImpl implements SellerService {
     private final PasswordEncoder passwordEncoder;
     private final AddressRepository addressRepository;
 
-
     @Override
     public Seller getSellerProfile(String jwt) throws Exception {
         String email = jwtProvider.getEmailFromJwtToken(jwt);
@@ -51,13 +50,11 @@ public class SellerServiceImpl implements SellerService {
         return sellerRepository.save(newSeller);
     }
 
-
     @Override
     public Seller getSellerById(Long id) throws SellerException {
         return sellerRepository.findById(id)
                 .orElseThrow(() -> new SellerException("seller not found with id " + id));
     }
-
 
     @Override
     public Seller getSellerByEmail(String email) throws Exception {
@@ -111,7 +108,7 @@ public class SellerServiceImpl implements SellerService {
             existingSeller.getPickupAddress().setCity(seller.getPickupAddress().getCity());
             existingSeller.getPickupAddress().setState(seller.getPickupAddress().getState());
             existingSeller.getPickupAddress().setMobile(seller.getPickupAddress().getMobile());
-            existingSeller.getPickupAddress().setPincode(seller.getPickupAddress().getPincode());
+            existingSeller.getPickupAddress().setPinCode(seller.getPickupAddress().getPinCode());
         }
 
         return sellerRepository.save(existingSeller);

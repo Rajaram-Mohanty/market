@@ -2,15 +2,15 @@ import { Box, Grid, TextField, Button } from "@mui/material";
 import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { createOrder } from "../../state/customer/orderSlice";
-import { useAppDispatch } from "../../state/store";
+import { addUserAddress } from "../../state/authSlice";
+import { useAppDispatch, useAppSelector } from "../../state/store";
 
 const AddressFormSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
   mobile: Yup.string()
     .required("Mobile is required")
     .matches(/^[0-9]{10}$/, "Mobile number must be 10 digits"),
-  pincode: Yup.string()
+  pinCode: Yup.string()
     .required("Pincode is required")
     .matches(/^[0-9]{6}$/, "Pincode must be 6 digits"),
   address: Yup.string().required("Address is required"),
@@ -19,16 +19,17 @@ const AddressFormSchema = Yup.object().shape({
   locality: Yup.string().required("Locality is required"),
 });
 
-const AddressForm = ({paymentGateway}:any) => {
+const AddressForm = ({handleClose}:any) => {
 
   const dispatch = useAppDispatch();
+  const { loading } = useAppSelector((state) => state.auth);
   
 
   const formik = useFormik({
     initialValues: {
       name: "",
       mobile: "",
-      pincode: "",
+      pinCode: "",
       address: "",
       city: "",
       state: "",
@@ -37,7 +38,8 @@ const AddressForm = ({paymentGateway}:any) => {
     validationSchema: AddressFormSchema,
     onSubmit: (values) => {
       console.log(values);
-      dispatch(createOrder({address:values, jwt:localStorage.getItem("jwt") || "", paymentGateway}));
+      dispatch(addUserAddress({address:values, jwt:localStorage.getItem("jwt") || ""}));
+      handleClose();
     },
   });
 
@@ -71,12 +73,12 @@ const AddressForm = ({paymentGateway}:any) => {
           <Grid size={{ xs: 6 }}>
             <TextField
               fullWidth
-              name="pincode"
+              name="pinCode"
               label="Pin Code"
-              value={formik.values.pincode}
+              value={formik.values.pinCode}
               onChange={formik.handleChange}
-              error={formik.touched.pincode && Boolean(formik.errors.pincode)}
-              helperText={formik.touched.pincode && formik.errors.pincode}
+              error={formik.touched.pinCode && Boolean(formik.errors.pinCode)}
+              helperText={formik.touched.pinCode && formik.errors.pinCode}
             />
           </Grid>
           <Grid size={{ xs: 12 }}>
@@ -131,8 +133,9 @@ const AddressForm = ({paymentGateway}:any) => {
               variant="contained"
               type="submit"
               sx={{ py: "14px" }}
+              disabled={loading}
             >
-              Add Address
+              {loading ? "Processing..." : "Add Address"}
             </Button>
           </Grid>
         </Grid>

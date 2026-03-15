@@ -1,23 +1,40 @@
-import React from 'react'
-import { Radio } from '@mui/material'
+import React from "react";
+import { Radio } from "@mui/material";
+import type { Address } from "../../types/userTypes";
 
-const AddressCard = () => {
-    const handleChange = (event: any) => {
-        console.log(event?.target.checked);
-    }
-    return (
-        <div className='p-5 border rounded-md flex'>
-            <div className='flex items-center gap-3'>
-                <Radio checked={true} onChange={handleChange} value="" name="radio-button" />
-            </div>
+interface AddressCardProps {
+  address: Address;
+  selected: boolean;
+  onSelect: () => void;
+}
 
-            <div className='space-y-3 pt-3'>
-                <h1>Market</h1>
-                <p className='w[320px]'>Ambavadi choke, Banglor, karnataka -530068</p>
-                <p><strong>Mobile Number: </strong>9876543210</p>
-            </div>
-        </div>
-    );
+const AddressCard: React.FC<AddressCardProps> = ({
+  address,
+  selected,
+  onSelect,
+}) => {
+  const { name, address: line1, city, state, pinCode, locality, mobile } =
+    address as any;
+
+  return (
+    <div className="p-5 border rounded-md flex">
+      <div className="flex items-center gap-3">
+        <Radio checked={selected} onChange={onSelect} />
+      </div>
+
+      <div className="space-y-3 pt-3">
+        <h1>{name}</h1>
+        <p className="w[320px]">
+          {[line1, locality, city, state].filter(Boolean).join(", ")}{" "}
+          {pinCode}
+        </p>
+        <p>
+          <strong>Mobile Number: </strong>
+          {mobile}
+        </p>
+      </div>
+    </div>
+  );
 };
 
-export default AddressCard
+export default AddressCard;

@@ -1,12 +1,11 @@
 package org.projects.market.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.projects.market.model.Address;
 import org.projects.market.model.User;
 import org.projects.market.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,5 +19,15 @@ public class UserController {
         User user = userService.findUserByJwtToken(jwt);
 
         return ResponseEntity.ok(user);
+    }
+
+    @PostMapping("/api/users/address")
+    public ResponseEntity<User> addAddressHandler(
+            @RequestBody Address address,
+            @RequestHeader("Authorization") String jwt) throws Exception {
+
+        User updatedUser = userService.addAddress(jwt, address);
+
+        return ResponseEntity.ok(updatedUser);
     }
 }

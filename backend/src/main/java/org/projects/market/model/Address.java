@@ -13,13 +13,13 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String Name;
+    private String name;
 
     private String locality;
 
@@ -29,7 +29,8 @@ public class Address {
 
     private String state;
 
-    private String pincode;
+    @jakarta.persistence.Column(name = "pincode")
+    private String pinCode;
 
     private String mobile;
 }

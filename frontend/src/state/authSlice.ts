@@ -102,6 +102,26 @@ export const fetchUserProfile = createAsyncThunk<any, any>(
   },
 );
 
+export const addUserAddress = createAsyncThunk<any, any>(
+  "/auth/addUserAddress",
+  async ({ address, jwt }, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/api/users/address", address, {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      });
+      console.log("address added", response.data);
+      return response.data;
+    } catch (error: any) {
+      console.log("error ---", error);
+      return rejectWithValue(
+        error.response?.data || "Failed to add address",
+      );
+    }
+  },
+);
+
 const initialState: AuthState = {
   jwt: localStorage.getItem("jwt"),
   otpSent: false,
@@ -141,6 +161,16 @@ const authSlice = createSlice({
     builder.addCase(signup.fulfilled, (state, action) => {
       state.jwt = action.payload;
       state.isLoggedIn = true;
+    });
+    builder.addCase(addUserAddress.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(addUserAddress.fulfilled, (state, action) => {
+      state.user = action.payload;
+      state.loading = false;
+    });
+    builder.addCase(addUserAddress.rejected, (state) => {
+      state.loading = false;
     });
     builder.addCase(fetchUserProfile.fulfilled, (state, action) => {
       state.user = action.payload;

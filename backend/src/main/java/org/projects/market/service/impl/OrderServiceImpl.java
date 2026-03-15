@@ -1,7 +1,5 @@
 package org.projects.market.service.impl;
 
-
-
 import lombok.RequiredArgsConstructor;
 import org.projects.market.domain.OrderStatus;
 import org.projects.market.domain.PaymentStatus;
@@ -29,13 +27,15 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemRepository orderItemRepository;
 
     @Override
+    @org.springframework.transaction.annotation.Transactional
     public Set<Order> createOrder(User user, Address shippingAddress, Cart cart) {
 
         // 1. Handle Shipping Address
-        if (!user.getAddresses().contains(shippingAddress)) {
-            user.getAddresses().add(shippingAddress);
-        }
         Address savedAddress = addressRepository.save(shippingAddress);
+        if (!user.getAddresses().contains(savedAddress)) {
+            user.getAddresses().add(savedAddress);
+            userRepository.save(user);
+        }
 
         //  Brand 1 -> 4 shirts
         //  Brand 2 -> 3 pants
@@ -123,7 +123,7 @@ public class OrderServiceImpl implements OrderService {
 //        order.getPaymentDetails().setStatus("COMPLETED");
 //        return orderRepository.save(order);
 //    }
-//
+    //
 //    @Override
 //    public Order confirmedOrder(Long orderId) {
 //        Order order = findOrderById(orderId);
@@ -161,7 +161,7 @@ public class OrderServiceImpl implements OrderService {
 //    public List<Order> getAllOrders() {
 //        return orderRepository.findAll();
 //    }
-//
+    //
 //    @Override
 //    public void deleteOrder(Long orderId) {
 //        Order order = findOrderById(orderId);

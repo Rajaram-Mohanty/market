@@ -9,17 +9,21 @@ import org.projects.market.model.User;
 import org.projects.market.repository.CartRepository;
 import org.projects.market.repository.SellerRepository;
 import org.projects.market.repository.UserRepository;
+import org.projects.market.model.Address;
+import org.projects.market.repository.AddressRepository;
 import org.projects.market.service.UserService;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@org.springframework.transaction.annotation.Transactional
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
     private final SellerRepository sellerRepository;
     private final CartRepository cartRepository;
+    private final AddressRepository addressRepository;
 
     @Override
     public User findUserByJwtToken(String jwt) throws Exception {
@@ -35,7 +39,8 @@ public class UserServiceImpl implements UserService {
             return user;
         }
 
-        // If no customer User found, check if this is a seller and create a linked User on demand
+        // If no customer User found, check if this is a seller and create a linked User
+        // on demand
         Seller seller = sellerRepository.findByEmail(email);
         if (seller != null) {
             User sellerUser = new User();
@@ -53,5 +58,12 @@ public class UserServiceImpl implements UserService {
         }
 
         throw new Exception("user not found with email");
+    }
+
+    @Override
+    public User addAddress(String jwtToken, Address address) throws Exception {
+        User user = this.findUserByJwtToken(jwtToken);
+        user.getAddresses().add(address);
+        return userRepository.save(user);
     }
 }

@@ -45,7 +45,7 @@ const ProductCard = ({ item }: { item: Product }) => {
       className="group px-4 relative"
     >
       <div
-        className="card relative w-[250px] h-[350px] overflow-hidden"
+        className="card relative w-full max-w-[280px] h-[350px] overflow-hidden mx-auto"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -78,7 +78,7 @@ const ProductCard = ({ item }: { item: Product }) => {
         )}
       </div>
 
-      <div className="details group-hover-effect pt-3 space-y-1 rounded-md">
+      <div className="details group-hover-effect pt-3 space-y-1 rounded-md max-w-[280px] mx-auto">
         <div className="name">
           <h1>{item.seller?.businessDetails.businessName}</h1>
           <p>{item.title}</p>
