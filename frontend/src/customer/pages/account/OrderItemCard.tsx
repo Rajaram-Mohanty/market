@@ -9,7 +9,7 @@ const OrderItemCard = ({item,order}:{item:OrderItem, order:Order}) => {
  
   return (
     <div
-      onClick={() => navigate(`account/order/${order.id}/${item.id}`)}
+      onClick={() => navigate(`/account/order/${order.id}/${item.id}`)}
       className="text-sm bg-white p-5 space-y-4 border rounded-md cursor-pointer flex items-center gap-5"
     >
       <section>
@@ -18,21 +18,20 @@ const OrderItemCard = ({item,order}:{item:OrderItem, order:Order}) => {
         </Avatar>
       </section>
       <div>
-        <h1 className="font-bold text-primary-color">PENDING</h1>
+        <h1 className="font-bold text-primary-color">{order.orderStatus}</h1>
         <p>Arriving by {order.deliverDate}</p>
       </div>
       <div className="p-5 bg-teal-50 flex gap-3 w-full">
-        <img
-          className="w-[70px]"
-          src={item.product.images[0]}
-          alt=""
-        />
+        <img className="w-[70px]" src={item.product.images[0]} alt="" />
         <div className="flex flex-col justify-between py-2 space-y-1">
-          <h1 className="font-bold">{item.product.seller?.businessDetails.businessName}</h1>
+          <h1 className="font-bold">
+            {item.product.seller?.businessDetails.businessName}
+          </h1>
           <p>{item.product.title}</p>
-          <strong>
-            Size: <p>Free</p>
-          </strong>
+          <p>
+            <strong>Size: </strong>
+            {item.size}
+          </p>
         </div>
       </div>
     </div>

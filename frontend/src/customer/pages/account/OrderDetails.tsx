@@ -54,16 +54,20 @@ const OrderDetails = () => {
           </h1>
           <p>{order.orderItem?.product.title}</p>
           <p>
-            <strong>Size: </strong>M
+            <strong>Size: </strong>{order.orderItem?.size}
           </p>
         </div>
-        <Button onClick={() => navigate(`/reviews/${5}/create`)}>
+        <Button
+          onClick={() =>
+            navigate(`/reviews/${order.orderItem?.product.id}/create`)
+          }
+        >
           Write Review
         </Button>
       </section>
 
       <section className="border p-5">
-        <OrderStepper orderStatus={"SHIPPED"} />
+        <OrderStepper orderStatus={order.currentOrder?.orderStatus} />
       </section>
 
       <section className="border p-5">
@@ -89,7 +93,12 @@ const OrderDetails = () => {
             <p className="font-bold">Total Item Price</p>
             <p>
               You saved{" "}
-              <span className="text-green-500 font-medium text-xs">699.00</span>{" "}
+              <span className="text-green-500 font-medium text-xs">
+                ₹
+                {(order.orderItem?.mrpPrice || 0) -
+                  (order.orderItem?.sellingPrice || 0)}
+                .00
+              </span>{" "}
               on this item
             </p>
           </div>

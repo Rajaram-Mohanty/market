@@ -5,7 +5,7 @@ import Orders from "./Orders";
 import UserDetails from "./UserDetails";
 import Address from "./Address";
 import OrderDetails from "./OrderDetails";
-import { useAppDispatch } from "../../../state/store";
+import { useAppDispatch, useAppSelector } from "../../../state/store";
 import { logout } from "../../../state/authSlice";
 
 const menu = [
@@ -20,9 +20,10 @@ const Account = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { auth } = useAppSelector((store) => store);
 
   const handleClick = (item: any) => {
-    if(item.path==="/"){
+    if (item.path === "/") {
       dispatch(logout(navigate));
     }
     navigate(item.path);
@@ -31,7 +32,7 @@ const Account = () => {
   return (
     <div className="px-5 lg:px-52 min-h-screen mt-10">
       <div>
-        <h1 className="text-xl font-bold pb-5">Ashok</h1>
+        <h1 className="text-xl font-bold pb-5">{auth.user?.fullName}</h1>
       </div>
       <Divider />
       <div className="grid grid-cols-1 lg:grid-cols-3 lg:min-h-[78vh]">
@@ -39,9 +40,17 @@ const Account = () => {
           <div className="space-y-2">
             {menu.map((item) => (
               <div
-                key={item.name} //helps to make react understand which item of the list is updated
+                key={item.name}
                 onClick={() => handleClick(item)}
-                className={`${item.path === location.pathname ? "bg-primary-color text-white" : "primary-color"} 
+                className={`${
+                  item.path === location.pathname ||
+                  (item.path === "/account" &&
+                    location.pathname === "/account/profile") ||
+                  (item.path === "/account/orders" &&
+                    location.pathname.startsWith("/account/order/"))
+                    ? "bg-primary-color text-white"
+                    : "primary-color"
+                } 
                 py-3 px-5 rounded-md cursor-pointer hover:bg-primary-color hover:text-white border-b`}
               >
                 <p>{item.name}</p>

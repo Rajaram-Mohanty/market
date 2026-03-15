@@ -30,7 +30,7 @@ const OrderStepper = ({ orderStatus }: any) => {
     }
   }, [orderStatus]);
 
-  const currentStep = 2;
+  const currentStep = statusStep.findIndex((step) => step.value === orderStatus);
 
   return (
     <div className="mx-auto my-10">
