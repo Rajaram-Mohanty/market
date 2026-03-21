@@ -7,10 +7,12 @@ import org.projects.market.model.*;
 import org.projects.market.repository.AddressRepository;
 import org.projects.market.repository.OrderItemRepository;
 import org.projects.market.repository.OrderRepository;
+import org.projects.market.repository.ProductRepository;
 import org.projects.market.repository.UserRepository;
 import org.projects.market.service.CartService;
 import org.projects.market.service.OrderService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -25,6 +27,7 @@ public class OrderServiceImpl implements OrderService {
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
     private final OrderItemRepository orderItemRepository;
+    private final ProductRepository productRepository;
 
     @Override
     @org.springframework.transaction.annotation.Transactional
@@ -36,10 +39,6 @@ public class OrderServiceImpl implements OrderService {
             user.getAddresses().add(savedAddress);
             userRepository.save(user);
         }
-
-        //  Brand 1 -> 4 shirts
-        //  Brand 2 -> 3 pants
-        //  Brand 1 -> 2 shoes
 
         Map<Long, List<CartItem>> itemsBySeller = cart.getCartItems().stream()
                 .collect(Collectors.groupingBy(item -> item.getProduct().getSeller().getId()));
@@ -86,19 +85,75 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Order findOrderById(Long orderId) throws Exception {
-        return orderRepository.findById(orderId).orElseThrow(()->
-                new Exception("order not found ..."));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new Exception("order not found ..."));
+
+        return order;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Order> usersOrderHistory(Long userId) {
-        return orderRepository.findByUserId(userId);
+        List<Order> orders = orderRepository.findByUserId(userId);
+
+        // Manual Multi-Query Strategy: Fetch all order items and stitch them back
+        stitchOrderItems(orders);
+
+        return orders;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Order> sellersOrder(Long sellerId) {
-        return orderRepository.findBySellerId(sellerId);
+        List<Order> orders = orderRepository.findBySellerId(sellerId);
+
+        // Manual Multi-Query Strategy: Fetch all order items and stitch them back
+        stitchOrderItems(orders);
+
+        return orders;
+    }
+
+    private void stitchOrderItems(List<Order> orders) {
+        if (orders.isEmpty())
+            return;
+
+        List<Long> orderIds = orders.stream()
+                .map(Order::getId)
+                .collect(Collectors.toList());
+
+        // Fetch all order items for these orders in one query
+        List<OrderItem> allOrderItems = orderItemRepository.findByOrderIdIn(orderIds);
+
+        // Group by Order ID
+        Map<Long, List<OrderItem>> itemsByOrderId = allOrderItems.stream()
+                .collect(Collectors.groupingBy(item -> item.getOrder().getId()));
+
+        // Collect all products for manual image fetching
+        List<Product> allProducts = allOrderItems.stream()
+                .map(OrderItem::getProduct)
+                .distinct()
+                .collect(Collectors.toList());
+
+        if (!allProducts.isEmpty()) {
+            List<Long> productIds = allProducts.stream()
+                    .map(Product::getId)
+                    .collect(Collectors.toList());
+
+            List<Object[]> imageResults = productRepository.findImagesByProductIds(productIds);
+            Map<Long, List<String>> imagesMap = imageResults.stream()
+                    .collect(Collectors.groupingBy(
+                            res -> (Long) res[0],
+                            Collectors.mapping(res -> (String) res[1], Collectors.toList())));
+
+            allProducts.forEach(p -> p.setImages(imagesMap.getOrDefault(p.getId(), new ArrayList<>())));
+        }
+
+        // Stitch back to orders
+        orders.forEach(order -> {
+            List<OrderItem> items = itemsByOrderId.getOrDefault(order.getId(), new ArrayList<>());
+            order.setOrderItems(items);
+        });
     }
 
     @Override
@@ -110,61 +165,18 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderItem getOrderItemById(Long id) throws Exception {
-        return orderItemRepository.findById(id).orElseThrow(() ->
-                new Exception("order item not exist ..."));
+        return orderItemRepository.findById(id).orElseThrow(() -> new Exception("order item not exist ..."));
     }
-
-
-
-//    @Override
-//    public Order placedOrder(Long orderId) {
-//        Order order = findOrderById(orderId);
-//        order.setOrderStatus("PLACED");
-//        order.getPaymentDetails().setStatus("COMPLETED");
-//        return orderRepository.save(order);
-//    }
-    //
-//    @Override
-//    public Order confirmedOrder(Long orderId) {
-//        Order order = findOrderById(orderId);
-//        order.setOrderStatus("CONFIRMED");
-//        return orderRepository.save(order);
-//    }
-
-//    @Override
-//    public Order shippedOrder(Long orderId) {
-//        Order order = findOrderById(orderId);
-//        order.setOrderStatus("SHIPPED");
-//        return orderRepository.save(order);
-//    }
-
-//    @Override
-//    public Order deliveredOrder(Long orderId) {
-//        Order order = findOrderById(orderId);
-//        order.setOrderStatus("DELIVERED");
-//        return orderRepository.save(order);
-//    }
 
     @Override
     public Order cancelOrder(Long orderId, User user) throws Exception {
         Order order = findOrderById(orderId);
 
-        if(!user.getId().equals(order.getUser().getId())){
+        if (!user.getId().equals(order.getUser().getId())) {
             throw new Exception("you dont have access to this order");
         }
 
         order.setOrderStatus(OrderStatus.CANCELLED);
         return orderRepository.save(order);
     }
-
-//    @Override
-//    public List<Order> getAllOrders() {
-//        return orderRepository.findAll();
-//    }
-    //
-//    @Override
-//    public void deleteOrder(Long orderId) {
-//        Order order = findOrderById(orderId);
-//        orderRepository.deleteById(order.getId());
-//    }
 }

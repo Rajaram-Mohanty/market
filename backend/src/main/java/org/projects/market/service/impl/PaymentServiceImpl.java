@@ -8,8 +8,8 @@ import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
+import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.json.JSONObject;
 import org.projects.market.domain.PaymentOrderStatus;
 import org.projects.market.domain.PaymentStatus;
@@ -30,11 +30,17 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentOrderRepository paymentOrderRepository;
     private final OrderRepository orderRepository;
 
-    private String apiKey = "apiKey";
+    @Value("${razorpay.api.key}")
+    private String apiKey;
 
-    private String apiSecret = "apiSecret";
+    @Value("${razorpay.api.secret}")
+    private String apiSecret;
 
-    private String stripeSecretKey = "stripeSecretKey";
+    @Value("${stripe.api.key}")
+    private String stripeSecretKey;
+
+    @Value("${frontend.url}")
+    private String frontendUrl;
 
     @Override
     public PaymentOrder createOrder(User user, Set<Order> orders) {
@@ -65,8 +71,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public Boolean proceedPaymentOrder(PaymentOrder paymentOrder,
-                                       String paymentId,
-                                       String paymentLinkId) throws Exception {
+            String paymentId,
+            String paymentLinkId) throws Exception {
 
         if (paymentOrder.getStatus().equals(PaymentOrderStatus.PENDING)) {
             RazorpayClient razorpay = new RazorpayClient(apiKey, apiSecret);
@@ -74,7 +80,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             String status = payment.get("status");
 
-            if (status.equals("captured")) {                      //captured means payment successful
+            if (status.equals("captured")) { // captured means payment successful
                 Set<Order> orders = paymentOrder.getOrders();
                 for (Order order : orders) {
                     order.setPaymentStatus(PaymentStatus.COMPLETED);
@@ -111,7 +117,7 @@ public class PaymentServiceImpl implements PaymentService {
             notify.put("email", true);
             paymentLinkRequest.put("notify", notify);
 
-            paymentLinkRequest.put("callback_url", "http://localhost:3000/payment-success/" + orderId);
+            paymentLinkRequest.put("callback_url", frontendUrl + "/payment/success/" + orderId);
             paymentLinkRequest.put("callback_method", "get");
 
             PaymentLink paymentLink = razorpay.paymentLink.create(paymentLinkRequest);
@@ -120,8 +126,7 @@ public class PaymentServiceImpl implements PaymentService {
             String paymentLinkId = paymentLink.get("id");
 
             return paymentLink;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new RazorpayException(e.getMessage());
         }
@@ -135,8 +140,8 @@ public class PaymentServiceImpl implements PaymentService {
         SessionCreateParams params = SessionCreateParams.builder()
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
                 .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setSuccessUrl("http://localhost:3000/payment-success/" + orderId)
-                .setCancelUrl("http://localhost:3000/payment-cancel")
+                .setSuccessUrl(frontendUrl + "/payment/success/" + orderId)
+                .setCancelUrl(frontendUrl + "/payment-cancel")
                 .addLineItem(SessionCreateParams.LineItem.builder()
                         .setQuantity(1L)
                         .setPriceData(SessionCreateParams.LineItem.PriceData.builder()

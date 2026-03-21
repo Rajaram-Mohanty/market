@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 import org.projects.market.domain.OrderStatus;
 import org.projects.market.domain.PaymentStatus;
 
@@ -21,7 +22,7 @@ import java.util.List;
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "orders")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Order {
 
     @Id
@@ -31,12 +32,13 @@ public class Order {
 
     private String orderId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({ "addresses", "usedCoupons", "hibernateLazyInitializer", "handler" })
     private User user;
-
 
     private Long sellerId;
 
+    @BatchSize(size = 20)
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
@@ -58,7 +60,7 @@ public class Order {
 
     private PaymentStatus paymentStatus = PaymentStatus.PENDING;
 
-    private LocalDateTime orderDate =  LocalDateTime.now();
+    private LocalDateTime orderDate = LocalDateTime.now();
 
     private LocalDateTime deliverDate = orderDate.plusDays(7);
 }

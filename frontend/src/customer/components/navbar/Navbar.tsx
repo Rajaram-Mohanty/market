@@ -25,8 +25,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { auth } = useAppSelector((store) => store);
 
-  const isLoggedIn =
-    auth.isLoggedIn || !!auth.user || !!localStorage.getItem("jwt");
+  const isLoggedIn = auth.isLoggedIn || !!auth.user;
 
   return (
     <div>

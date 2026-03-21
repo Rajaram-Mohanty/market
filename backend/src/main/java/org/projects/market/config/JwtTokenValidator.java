@@ -47,7 +47,10 @@ public class JwtTokenValidator extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
-                throw new BadCredentialsException("Invalid token...");
+                // Log the exception if needed, but don't throw it
+                // This allows the filter chain to continue, and Spring Security will
+                // handle authorization based on whether the context was set.
+                System.out.println("Invalid token: " + e.getMessage());
             }
         }
         filterChain.doFilter(request, response);

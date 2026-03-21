@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.projects.market.domain.USER_ROLE;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -41,6 +42,7 @@ public class User {
 
     private USER_ROLE role = USER_ROLE.ROLE_COSTUMER;
 
+    @BatchSize(size = 20)
     @OneToMany(cascade = CascadeType.ALL)
     private Set<Address> addresses = new HashSet<>();
 

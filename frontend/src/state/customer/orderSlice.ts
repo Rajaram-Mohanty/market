@@ -91,7 +91,7 @@ export const paymentSuccess = createAsyncThunk<
   { paymentId: string; jwt: string, paymentLinkId: string }
 >("orders/paymentSuccess", async ({ paymentId, jwt, paymentLinkId }, { rejectWithValue }) => {
   try {
-    const response = await api.get(`${API_URL}/payment/success/${paymentId}`, {
+    const response = await api.get(`/api/payment/${paymentId}`, {
       headers: { Authorization: `Bearer ${jwt}` },
       params: {paymentLinkId },
     });

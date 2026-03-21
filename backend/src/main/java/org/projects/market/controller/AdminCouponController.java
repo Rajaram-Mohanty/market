@@ -9,7 +9,6 @@ import org.projects.market.service.CouponService;
 import org.projects.market.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,14 +41,12 @@ public class AdminCouponController {
     }
 
     @PostMapping("/admin/create")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Coupon> createCoupon(@RequestBody Coupon coupon) {
         Coupon createdCoupon = couponService.createCoupon(coupon);
         return new ResponseEntity<>(createdCoupon, HttpStatus.CREATED);
     }
 
     @PatchMapping("/admin/update/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Coupon> updateCoupon(
             @PathVariable Long id,
             @RequestBody Coupon coupon) throws Exception {
@@ -58,7 +55,6 @@ public class AdminCouponController {
     }
 
     @DeleteMapping("/admin/delete/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse> deleteCoupon(@PathVariable Long id) throws Exception {
         couponService.deleteCoupon(id);
         ApiResponse response = new ApiResponse();

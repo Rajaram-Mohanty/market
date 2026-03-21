@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ReviewService {
 
-    Review createReview(CreateReviewRequest req, User user, Product product);
+    Review createReview(CreateReviewRequest req, User user, Long productId) throws Exception;
 
     List<Review> getReviewByProductId(Long productId);
 

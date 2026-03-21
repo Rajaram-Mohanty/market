@@ -5,6 +5,7 @@ import Home from "./customer/pages/home/Home";
 import Product from "./customer/pages/product/Product";
 import ProductDetails from "./customer/pages/page-details/ProductDetails";
 import Review from "./customer/pages/review/Review";
+import CreateReview from "./customer/pages/review/CreateReview";
 import Cart from "./customer/pages/cart/Cart";
 import Checkout from "./customer/checkout/Checkout";
 import Account from "./customer/pages/account/Account";
@@ -17,7 +18,7 @@ import { useEffect } from "react";
 import { fetchSellerProfile } from "./state/seller/sellerSlice";
 import { fetchUserProfile } from "./state/authSlice";
 import Auth from "./customer/pages/auth/Auth";
-import PaymentSucess from "./customer/pages/PaymentSucess";
+import PaymentSuccess from "./customer/pages/PaymentSuccess";
 import Wishlist from "./customer/wishlist/Wishlist";
 import RequireAuth from "./component/RequireAuth";
 
@@ -58,6 +59,14 @@ function App() {
           <Route path="/products/:category" element={<Product />} />
           <Route path="/reviews/:productId" element={<Review />} />
           <Route
+            path="/reviews/:productId/create"
+            element={
+              <RequireAuth allowedRoles={["ROLE_CUSTOMER"]}>
+                <CreateReview />
+              </RequireAuth>
+            }
+          />
+          <Route
             path="/product-details/:categoryId/:name/:productId"
             element={<ProductDetails />}
           />
@@ -89,7 +98,7 @@ function App() {
             path="/payment/success/:orderId"
             element={
               <RequireAuth allowedRoles={["ROLE_CUSTOMER"]}>
-                <PaymentSucess />
+                <PaymentSuccess />
               </RequireAuth>
             }
           />

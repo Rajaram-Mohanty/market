@@ -6,9 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.projects.market.exceptions.ProductException;
 import org.projects.market.model.Category;
 import org.projects.market.model.Product;
+import org.projects.market.model.Review;
 import org.projects.market.model.Seller;
 import org.projects.market.repository.CategoryRepository;
 import org.projects.market.repository.ProductRepository;
+import org.projects.market.repository.ReviewRepository;
 import org.projects.market.request.CreateProductRequest;
 import org.projects.market.service.ProductService;
 import org.springframework.data.domain.Page;
@@ -21,7 +23,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +35,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ReviewRepository reviewRepository;
 
     @Override
     public Product createProduct(CreateProductRequest req, Seller seller) {
@@ -84,7 +91,7 @@ public class ProductServiceImpl implements ProductService {
             throw new IllegalArgumentException("Actual price must be greater than 0*");
         }
         double discount = mrpPrice - sellingPrice;
-        double discountPercentage = (discount / 100) * 100;
+        double discountPercentage = (discount / (double) mrpPrice) * 100;
         return (int) discountPercentage;
     }
 
@@ -165,19 +172,30 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     public Product findProductById(Long productId) throws ProductException {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductException("product not found with id" + productId));
+                .orElseThrow(() -> new ProductException("product not found with id " + productId));
 
-        // Initialize lazy images while the session is open
-        if (product.getImages() != null) {
-            product.getImages().size();
+        // Manual Secondary Fetch: For a single product, fetch its images if not already
+        // loaded by JPA graph
+        if (product.getImages() == null || product.getImages().isEmpty()) {
+            List<Object[]> results = productRepository.findImagesByProductIds(Collections.singletonList(productId));
+            List<String> images = results.stream()
+                    .map(res -> (String) res[1])
+                    .collect(Collectors.toList());
+            product.setImages(images);
         }
 
         return product;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Product> searchProduct(String query) {
-        return productRepository.searchProduct(query);
+        List<Product> products = productRepository.searchProduct(query);
+
+        // Manual Multi-Query Strategy for Search results
+        stitchCollections(products);
+
+        return products;
     }
 
     @Override
@@ -189,38 +207,38 @@ public class ProductServiceImpl implements ProductService {
         Specification<Product> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            // Filtering by Category [07:58:04]
+            // Filtering by Category
             if (category != null && !category.isBlank()) {
                 Join<Product, Category> categoryJoin = root.join("category");
                 predicates.add(criteriaBuilder.equal(categoryJoin.get("categoryId"), category));
             }
 
-            // Filtering by Color [07:59:44]
+            // Filtering by Color
             if (colors != null && !colors.isEmpty()) {
                 predicates.add(criteriaBuilder.equal(root.get("color"), colors));
             }
 
-            // Filtering by Sizes [08:00:13]
+            // Filtering by Sizes
             if (sizes != null) {
                 predicates.add(criteriaBuilder.equal(root.get("size"), sizes));
             }
 
-            // Filtering by Minimum Price [08:00:35]
+            // Filtering by Minimum Price
             if (minPrice != null) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("sellingPrice"), minPrice));
             }
 
-            // Filtering by Maximum Price [08:01:03]
+            // Filtering by Maximum Price
             if (maxPrice != null) {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("sellingPrice"), maxPrice));
             }
 
-            // Filtering by Minimum Discount [08:01:32]
+            // Filtering by Minimum Discount
             if (minDiscount != null) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("discountPercent"), minDiscount));
             }
 
-            // Filtering by Stock Status [08:02:10]
+            // Filtering by Stock Status
             if (stock != null) {
                 predicates.add(criteriaBuilder.equal(root.get("stock"), stock));
             }
@@ -228,7 +246,7 @@ public class ProductServiceImpl implements ProductService {
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
 
-        // Handling Pagination and Sorting [08:03:15]
+        // Handling Pagination and Sorting
         Pageable pageable;
         if (sort != null && !sort.isEmpty()) {
             pageable = switch (sort) {
@@ -244,18 +262,44 @@ public class ProductServiceImpl implements ProductService {
 
         Page<Product> page = productRepository.findAll(spec, pageable);
 
-        // Initialize lazy-loaded images collection within the transaction
-        page.getContent().forEach(p -> {
-            if (p.getImages() != null) {
-                p.getImages().size();
-            }
-        });
+        // Manual Multi-Query Strategy: Fetch and stitch all images and reviews for the
+        // current page in one secondary query
+        stitchCollections(page.getContent());
 
         return page;
     }
 
+    private void stitchCollections(List<Product> products) {
+        if (products.isEmpty())
+            return;
+
+        List<Long> productIds = products.stream()
+                .map(Product::getId)
+                .collect(Collectors.toList());
+
+        // 1. Stitch Images (ElementCollection)
+        List<Object[]> imageResults = productRepository.findImagesByProductIds(productIds);
+        Map<Long, List<String>> imagesMap = imageResults.stream()
+                .collect(Collectors.groupingBy(
+                        res -> (Long) res[0],
+                        Collectors.mapping(res -> (String) res[1], Collectors.toList())));
+
+        // 2. Stitch Reviews (OneToMany)
+        List<Review> allReviews = reviewRepository.findByProductIdIn(productIds);
+        Map<Long, List<Review>> reviewsMap = allReviews.stream()
+                .collect(Collectors.groupingBy(r -> r.getProduct().getId()));
+
+        products.forEach(p -> {
+            p.setImages(imagesMap.getOrDefault(p.getId(), new ArrayList<>()));
+            p.setReviews(reviewsMap.getOrDefault(p.getId(), new ArrayList<>()));
+        });
+    }
+
     @Override
+    @Transactional(readOnly = true)
     public List<Product> getProductBySellerId(Long sellerId) {
-        return productRepository.findBySellerId(sellerId);
+        List<Product> products = productRepository.findBySellerId(sellerId);
+        stitchCollections(products);
+        return products;
     }
 }

@@ -50,17 +50,17 @@ export default function TransactionTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {transactions.transactions.map((item) => (
+          {transactions.transactions?.map((item) => (
             <StyledTableRow key={item.id}>
               <StyledTableCell align="center" component="th" scope="row">
                 {item.date}
               </StyledTableCell>
               <StyledTableCell align="center">
-                {item.customer.email}
+                {item.customer?.email}
               </StyledTableCell>
-              <StyledTableCell align="center">{item.order.id}</StyledTableCell>
+              <StyledTableCell align="center">{item.order?.id}</StyledTableCell>
               <StyledTableCell align="center">
-                {item.order.totalSellingPrice}
+                {item.order?.totalSellingPrice}
               </StyledTableCell>
             </StyledTableRow>
           ))}

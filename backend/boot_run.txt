@@ -1,0 +1,68 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------------< org.projects:market >-------------------------
+[INFO] Building market 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:4.0.1:run (default-cli) > test-compile @ market >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ market ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ market ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ market ---
+[INFO] skip non existing resourceDirectory D:\PlacementPrep\Projects\market\backend\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ market ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:4.0.1:run (default-cli) < test-compile @ market <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:4.0.1:run (default-cli) @ market ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.1)
+
+2026-03-21T11:57:35.585+05:30  INFO 19488 --- [market] [  restartedMain] org.projects.market.MarketApplication    : Starting MarketApplication using Java 21.0.2 with PID 19488 (D:\PlacementPrep\Projects\market\backend\target\classes started by rajar in D:\PlacementPrep\Projects\market\backend)
+2026-03-21T11:57:35.591+05:30  INFO 19488 --- [market] [  restartedMain] org.projects.market.MarketApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-03-21T11:57:35.706+05:30  INFO 19488 --- [market] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-03-21T11:57:35.706+05:30  INFO 19488 --- [market] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-03-21T11:57:37.342+05:30  INFO 19488 --- [market] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-21T11:57:37.579+05:30  INFO 19488 --- [market] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 220 ms. Found 18 JPA repository interfaces.
+2026-03-21T11:57:38.998+05:30  INFO 19488 --- [market] [  restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 5454 (http)
+2026-03-21T11:57:39.026+05:30  INFO 19488 --- [market] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-03-21T11:57:39.026+05:30  INFO 19488 --- [market] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-03-21T11:57:39.141+05:30  INFO 19488 --- [market] [  restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 3432 ms
+2026-03-21T11:57:39.564+05:30  INFO 19488 --- [market] [  restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-03-21T11:57:39.652+05:30  INFO 19488 --- [market] [  restartedMain] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.0.Final
+2026-03-21T11:57:40.566+05:30  INFO 19488 --- [market] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-21T11:57:40.635+05:30  INFO 19488 --- [market] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-03-21T11:57:42.491+05:30  INFO 19488 --- [market] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4dc61f9f
+2026-03-21T11:57:42.493+05:30  INFO 19488 --- [market] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-03-21T11:57:42.928+05:30  INFO 19488 --- [market] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://market-marketplace-1.c.aivencloud.com:10479/market?createDatabaseIfNotExist=true&sslMode=REQUIRED]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.45
+	Default catalog/schema: market/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-03-21T11:57:45.855+05:30  INFO 19488 --- [market] [  restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-03-21T11:57:46.749+05:30  INFO 19488 --- [market] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-21T11:57:47.004+05:30  INFO 19488 --- [market] [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.

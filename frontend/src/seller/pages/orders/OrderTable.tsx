@@ -51,13 +51,13 @@ export default function OrderTable() {
     dispatch(fetchSellerOrders(localStorage.getItem("jwt") || ""));
   }, []);
 
-  const [anchorEl, setAnchorEl] = useState<null | any>();
+  const [anchorEl, setAnchorEl] = useState<Record<number, null | HTMLElement>>({});
   const open = Boolean(anchorEl);
   const handleClick = (event: any, orderId: number) => {
-    setAnchorEl((prev: any) => ({ ...prev, [orderId]: event.currentTarget }));
+    setAnchorEl((prev) => ({ ...prev, [orderId]: event.currentTarget }));
   };
   const handleClose = (orderId: number) => {
-    setAnchorEl((prev: any) => ({ ...prev, [orderId]: null }));
+    setAnchorEl((prev) => ({ ...prev, [orderId]: null }));
   };
 
   const handleUpdateOrderStatus = (orderId: number, orderStatus: any) => {

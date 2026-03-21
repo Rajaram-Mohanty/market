@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
+import org.hibernate.annotations.BatchSize;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Review {
 
     @Id
@@ -27,6 +29,7 @@ public class Review {
     @Column(nullable = false)
     private double rating;
 
+    @BatchSize(size = 20)
     @ElementCollection
     private List<String> productImages;
 
@@ -34,7 +37,8 @@ public class Review {
     @ManyToOne
     private Product product;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({ "addresses", "usedCoupons", "hibernateLazyInitializer", "handler" })
     private User user;
 
     @Column(nullable = false) // this annotation can be replaced by @NotNull annotation.

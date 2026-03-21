@@ -21,6 +21,26 @@ export const fetchSellerProfile = createAsyncThunk(
   },
 );
 
+export const fetchSellerReport = createAsyncThunk(
+  "/sellers/fetchSellerReport",
+  async (jwt: string, { rejectWithValue }) => {
+    try {
+      const response = await api.get("sellers/report", {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      });
+      console.log("fetch seller report", response.data);
+      return response.data;
+    } catch (error: any) {
+      console.log("error ---", error);
+      return rejectWithValue(
+        error.response?.data || "Failed to fetch seller report",
+      );
+    }
+  },
+);
+
 export const becomeSeller = createAsyncThunk<any, any>(
   "/sellers/becomeSeller",
   async (sellerData, { rejectWithValue }) => {
@@ -75,6 +95,18 @@ const sellerSlice = createSlice({
       state.profile = action.payload;
     });
     builder.addCase(fetchSellerProfile.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error;
+    });
+
+    builder.addCase(fetchSellerReport.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(fetchSellerReport.fulfilled, (state, action) => {
+      state.loading = false;
+      state.report = action.payload;
+    });
+    builder.addCase(fetchSellerReport.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error;
     });

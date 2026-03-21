@@ -22,7 +22,7 @@ export const fetchSellerOrders = createAsyncThunk<Order[], string>(
     'sellerOrders/fetchSellerOrders',
     async (jwt, { rejectWithValue }) => {
         try {
-            const response = await api.get('api/seller/orders', {
+            const response = await api.get('/api/seller/orders', {
                 headers: { Authorization: `Bearer ${jwt}` },
             });
             console.log("fetch seller orders", response.data);
@@ -41,7 +41,7 @@ export const updateOrderStatus = createAsyncThunk<
     'sellerOrders/updateOrderStatus',
     async ({ jwt, orderId, orderStatus }, { rejectWithValue }) => {
         try {
-            const response = await api.patch(`api/seller/orders/${orderId}/status/${orderStatus}`, 
+            const response = await api.patch(`/api/seller/orders/${orderId}/status/${orderStatus}`, 
                 null, 
                 { headers: { Authorization: `Bearer ${jwt}` } }
             );
@@ -57,7 +57,7 @@ export const deleteOrder = createAsyncThunk<any, { jwt: string; orderId: number 
     'sellerOrders/deleteOrder',
     async ({ jwt, orderId }, { rejectWithValue }) => {
         try {
-            const response = await api.delete(`api/seller/orders/${orderId}/delete`, {
+            const response = await api.delete(`/api/seller/orders/${orderId}/delete`, {
                 headers: { Authorization: `Bearer ${jwt}` },
             });
             return response.data;

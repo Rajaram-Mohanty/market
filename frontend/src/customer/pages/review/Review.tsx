@@ -1,41 +1,94 @@
-import { Divider } from '@mui/material'
-import React from 'react'
-import ReviewCard from './ReviewCard'
+import { useEffect } from "react";
+import { Button, CircularProgress, Divider, Typography } from "@mui/material";
+import { RateReview } from "@mui/icons-material";
+import { useNavigate, useParams } from "react-router-dom";
+import ReviewCard from "./ReviewCard";
+import { useAppDispatch, useAppSelector } from "../../../state/store";
+import { fetchReviewsByProductId } from "../../../state/customer/reviewSlice";
+import { fetchProductById } from "../../../state/customer/productSlice";
 
 const Review = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { productId } = useParams<{ productId: string }>();
+
+  const { review, product } = useAppSelector((store) => store);
+
+  useEffect(() => {
+    if (productId) {
+      dispatch(fetchReviewsByProductId(Number(productId)));
+      dispatch(fetchProductById(productId));
+    }
+  }, [productId]);
+
   return (
-    <div className='p-5 lg:px-20 flex flex-col lg:flex-row gap-20'>
-      <section className='w-full md:w-1/2 lg:w-[30%] space-y-2'>
-      <img src="https://images.unsplash.com/photo-1581655353564-df123a1eb820?ixlib=rb-4.0.3&auto=format&fit=crop&w=987&q=80" alt="" />
-      <div>
+    <div className="p-5 lg:px-20 flex flex-col lg:flex-row gap-16">
+
+      {/* Left: Product Info */}
+      <section className="w-full lg:w-[28%] space-y-3 shrink-0">
+        {product.product?.images?.[0] && (
+          <img
+            className="w-full rounded-lg object-cover"
+            src={product.product.images[0]}
+            alt={product.product.title}
+          />
+        )}
         <div>
-          <p className='font-bold text-xl'>Virani Clothing</p>
-          <p className='text-lg taxt-gray-600'>Men's white shirt</p>
+          <Typography variant="subtitle1" fontWeight="bold">
+            {product.product?.seller?.businessDetails.businessName}
+          </Typography>
+          <Typography variant="body2" className="text-gray-500">
+            {product.product?.title}
+          </Typography>
+          <div className="price flex items-center gap-3 mt-3 text-xl">
+            <span className="font-medium">₹{product.product?.sellingPrice}</span>
+            <span className="line-through text-gray-400 text-base">
+              ₹{product.product?.mrpPrice}
+            </span>
+            <span className="text-green-600 font-semibold text-sm">
+              {product.product?.discountPercent}% off
+            </span>
+          </div>
         </div>
-        <div className='price flex items-center gap-3 mt-5 text-2xl'>
-          <span className='font-sans text-gray-1000'>
-            Rs 400
-          </span>
-          <span className='line-through text-grey-500'>
-            Rs 999
-          </span>
-          <span className='text-primary-color font-semibold'>
-            60% off
-          </span>
-        </div>
-      </div>
+
+        <Button
+          variant="contained"
+          startIcon={<RateReview />}
+          onClick={() => navigate(`/reviews/${productId}/create`)}
+          fullWidth
+          sx={{ mt: 1 }}
+        >
+          Write a Review
+        </Button>
       </section>
 
-      <section className='space-y-5 w-full'>
-        {[1,1,1,1,1,1,1,1].map((item,index)=>
-          <div className='space-y-3'>
-            <ReviewCard/>
-            <Divider/>
+      {/* Right: Reviews List */}
+      <section className="space-y-5 w-full">
+        <Typography variant="h6" fontWeight="bold">
+          Customer Reviews ({review.reviews.length})
+        </Typography>
+
+        {review.loading && (
+          <div className="flex justify-center py-10">
+            <CircularProgress />
           </div>
         )}
+
+        {!review.loading && review.reviews.length === 0 && (
+          <div className="text-center py-10 text-gray-500">
+            <Typography variant="body1">No reviews yet. Be the first to review!</Typography>
+          </div>
+        )}
+
+        {review.reviews.map((item) => (
+          <div key={item.id} className="space-y-3">
+            <ReviewCard review={item} />
+            <Divider />
+          </div>
+        ))}
       </section>
     </div>
-  ) 
-}
+  );
+};
 
-export default Review
+export default Review;

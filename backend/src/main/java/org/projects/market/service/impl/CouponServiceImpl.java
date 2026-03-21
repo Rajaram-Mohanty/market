@@ -8,7 +8,6 @@ import org.projects.market.repository.CartRepository;
 import org.projects.market.repository.CouponRepository;
 import org.projects.market.repository.UserRepository;
 import org.projects.market.service.CouponService;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -82,13 +81,11 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
     public Coupon createCoupon(Coupon coupon) {
         return couponRepository.save(coupon);
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
     public Coupon updateCoupon(Coupon coupon, Long id) throws Exception {
         Coupon existingCoupon = findCouponById(id);
 
@@ -120,7 +117,6 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
     public void deleteCoupon(Long id) throws Exception {
         findCouponById(id);
         couponRepository.deleteById(id);

@@ -39,9 +39,7 @@ public class ReviewController {
             @PathVariable Long productId) throws Exception {
 
         User user = userService.findUserByJwtToken(jwt);
-        Product product = productService.findProductById(productId);
-
-        Review review = reviewService.createReview(req, user, product);
+        Review review = reviewService.createReview(req, user, productId);
         return new ResponseEntity<>(review, HttpStatus.CREATED);
     }
 
@@ -57,8 +55,7 @@ public class ReviewController {
                 reviewId,
                 req.getReviewText(),
                 req.getReviewRating(),
-                user.getId()
-        );
+                user.getId());
         return new ResponseEntity<>(review, HttpStatus.OK);
     }
 

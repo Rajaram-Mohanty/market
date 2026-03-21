@@ -7,6 +7,7 @@ import {
   AddShoppingCart,
   FavoriteBorder,
   LocalShipping,
+  RateReview,
   Remove,
   Shield,
   Wallet,
@@ -15,20 +16,23 @@ import {
 import SimilarProduct from "./SimilarProduct";
 import ReviewCard from "../review/ReviewCard";
 import { useAppDispatch, useAppSelector } from "../../../state/store";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { fetchProductById } from "../../../state/customer/productSlice";
 import { addItemToCart } from "../../../state/customer/cartSlice";
 import { addProductToWishlist } from "../../../state/customer/wishlistSlice";
+import { fetchReviewsByProductId } from "../../../state/customer/reviewSlice";
 
 const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { productId } = useParams();
-  const { product } = useAppSelector((store) => store);
+  const { product, review } = useAppSelector((store) => store);
   const [activeImage, setActiveImage] = useState(0);
 
   useEffect(() => {
     dispatch(fetchProductById(productId));
+    if (productId) dispatch(fetchReviewsByProductId(Number(productId)));
   }, [productId]);
 
   const handleActiveImage = (value: number) => {
@@ -169,8 +173,25 @@ const ProductDetails = () => {
           </div>
 
           <div className="mt-12 space-y-5">
-            <ReviewCard />
-            <Divider />
+            <div className="flex items-center justify-between">
+              <h2 className="font-bold text-base">Customer Reviews ({review.reviews.length})</h2>
+              <Button
+                size="small"
+                startIcon={<RateReview />}
+                onClick={() => navigate(`/reviews/${productId}/create`)}
+              >
+                Write Review
+              </Button>
+            </div>
+            {review.reviews.slice(0, 3).map((r) => (
+              <div key={r.id}>
+                <ReviewCard review={r} />
+                <Divider sx={{ mt: 2 }} />
+              </div>
+            ))}
+            {review.reviews.length === 0 && (
+              <p className="text-gray-400 text-sm">No reviews yet.</p>
+            )}
           </div>
         </section>
       </div>
