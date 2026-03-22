@@ -9,6 +9,7 @@ import GridTable from "../admin/pages/homepage/GridTable";
 import Deal from "../admin/pages/homepage/Deal";
 import ShopByCategoryTable from "../admin/pages/homepage/ShopByCategoryTable";
 import ElectronicTable from "../admin/pages/homepage/ElectronicTable";
+import Profile from "../admin/pages/account/Profile";
 
 const AdminRoutes = () => {
   const dispatch = useAppDispatch();
@@ -20,6 +21,7 @@ const AdminRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<SellerTable />} />
+      <Route path="/account" element={<Profile />} />
       <Route path="/coupon" element={<Coupon />} />
       <Route path="/add-coupon" element={<AddNewCouponForm />} />
       <Route path="/home-grid" element={<GridTable />} />

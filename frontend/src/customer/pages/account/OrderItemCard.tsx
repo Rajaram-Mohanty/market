@@ -4,13 +4,17 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import type { Order, OrderItem } from "../../../types/orderTypes";
 
+import { useAppDispatch } from "../../../state/store";
+import { deleteOrder } from "../../../state/customer/orderSlice";
+
 const OrderItemCard = ({item,order}:{item:OrderItem, order:Order}) => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
  
   return (
     <div
       onClick={() => navigate(`/account/order/${order.id}/${item.id}`)}
-      className="text-sm bg-white p-5 space-y-4 border rounded-md cursor-pointer flex items-center gap-5"
+      className="text-sm bg-white p-5 space-y-4 border rounded-md cursor-pointer flex items-center gap-5 relative"
     >
       <section>
         <Avatar sx={{ bgcolor: "#00927c" }}>
@@ -34,6 +38,19 @@ const OrderItemCard = ({item,order}:{item:OrderItem, order:Order}) => {
           </p>
         </div>
       </div>
+      {(order.orderStatus === "CANCELLED" || order.orderStatus === "DELIVERED") && (
+        <div className="absolute top-4 right-4">
+          <button 
+             className="text-red-500 hover:text-red-700 border border-red-500 hover:bg-red-50 px-3 py-1 rounded transition-colors text-xs font-semibold"
+             onClick={(e) => {
+               e.stopPropagation();
+               dispatch(deleteOrder({ orderId: order.id, jwt: localStorage.getItem("jwt") || "" }));
+             }}
+          >
+             DELETE
+          </button>
+        </div>
+      )}
     </div>
   );
 };

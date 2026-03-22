@@ -37,6 +37,11 @@ public class SellerProductController {
             @RequestHeader("Authorization") String jwt) throws Exception {
 
         Seller seller = sellerService.getSellerProfile(jwt);
+
+        if (seller.getAccountStatus() != org.projects.market.domain.AccountStatus.ACTIVE) {
+            throw new Exception("Your seller account must be verified by an Admin before you can publish products!");
+        }
+
         Product product = productService.createProduct(request, seller);
         return new ResponseEntity<>(product, HttpStatus.CREATED);
     }

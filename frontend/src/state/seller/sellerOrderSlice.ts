@@ -97,7 +97,7 @@ const sellerOrderSlice = createSlice({
                 state.loading = false;                                                              // find index of the order and update it
                 const index = state.orders.findIndex(order => order.id === action.payload.id);
                 if (index !== -1) {
-                    state.orders[index] = action.payload;
+                    state.orders[index].orderStatus = action.payload.orderStatus;
                 }
             })
             // Delete Order

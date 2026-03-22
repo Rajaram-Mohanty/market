@@ -114,6 +114,20 @@ export const cancelOrder = createAsyncThunk<
   }
 });
 
+export const deleteOrder = createAsyncThunk<
+  number,
+  { orderId: number; jwt: string }
+>("orders/deleteOrder", async ({ orderId, jwt }, { rejectWithValue }) => {
+  try {
+    const response = await api.delete(`${API_URL}/${orderId}`, {
+      headers: { Authorization: `Bearer ${jwt}` },
+    });
+    return orderId;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  }
+});
+
 // Slice
 const orderSlice = createSlice({
   name: "orders",
@@ -220,6 +234,20 @@ const orderSlice = createSlice({
       })
 
       .addCase(cancelOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // Delete Order
+      .addCase(deleteOrder.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteOrder.fulfilled, (state, action: PayloadAction<number>) => {
+        state.loading = false;
+        state.orders = state.orders.filter((order) => order.id !== action.payload);
+      })
+      .addCase(deleteOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })

@@ -20,7 +20,6 @@ public class PaymentController {
     private final SellerService sellerService;
     private final TransactionService transactionService;
 
-
     @GetMapping("/{paymentId}")
     public ResponseEntity<ApiResponse> paymentSuccessHandler(
             @PathVariable String paymentId,
@@ -47,6 +46,7 @@ public class PaymentController {
                 report.setTotalOrders(report.getTotalOrders() + 1);
                 report.setTotalEarning(report.getTotalEarning() + order.getTotalSellingPrice());
                 report.setTotalSales(report.getTotalSales() + order.getOrderItems().size());
+                report.setNetEarnings((long) order.getTotalSellingPrice()); // Set as Last Payment
 
                 sellerReportService.updateSellerReport(report);
             }

@@ -68,6 +68,7 @@ export default function OrderTable() {
         orderStatus,
       }),
     );
+    handleClose(orderId);
   };
 
   return (

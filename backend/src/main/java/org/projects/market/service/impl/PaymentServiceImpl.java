@@ -61,11 +61,24 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional
     public PaymentOrder getPaymentOrderByPaymentId(String orderId) throws Exception {
         PaymentOrder paymentOrder = paymentOrderRepository.findByPaymentLinkId(orderId);
         if (paymentOrder == null) {
             throw new Exception("Payment order not found with provided payment link id");
         }
+
+        // Safely initialize the lazy orders collection so it survives controller
+        // mapping
+        if (paymentOrder.getOrders() != null) {
+            paymentOrder.getOrders().size();
+            for (Order order : paymentOrder.getOrders()) {
+                if (order.getOrderItems() != null) {
+                    order.getOrderItems().size();
+                }
+            }
+        }
+
         return paymentOrder;
     }
 

@@ -7,6 +7,7 @@ import org.projects.market.model.*;
 import org.projects.market.repository.AddressRepository;
 import org.projects.market.repository.OrderItemRepository;
 import org.projects.market.repository.OrderRepository;
+import org.projects.market.repository.PaymentOrderRepository;
 import org.projects.market.repository.ProductRepository;
 import org.projects.market.repository.UserRepository;
 import org.projects.market.service.CartService;
@@ -28,6 +29,7 @@ public class OrderServiceImpl implements OrderService {
     private final UserRepository userRepository;
     private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
+    private final PaymentOrderRepository paymentOrderRepository;
 
     @Override
     @org.springframework.transaction.annotation.Transactional
@@ -88,6 +90,16 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     public Order findOrderById(Long orderId) throws Exception {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new Exception("order not found ..."));
+
+        // Safely initialize lazy collections before Hibernate session closes
+        if (order.getOrderItems() != null) {
+            order.getOrderItems().size();
+            for (OrderItem item : order.getOrderItems()) {
+                if (item.getProduct() != null && item.getProduct().getImages() != null) {
+                    item.getProduct().getImages().size();
+                }
+            }
+        }
 
         return order;
     }
@@ -157,15 +169,42 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public Order updateOrderStatus(Long orderId, OrderStatus orderStatus) throws Exception {
         Order order = findOrderById(orderId);
         order.setOrderStatus(orderStatus);
-        return orderRepository.save(order);
+
+        Order savedOrder = orderRepository.save(order);
+        // Force initialization of lazy User proxy to prevent Jackson serialization
+        // error
+        if (savedOrder.getUser() != null) {
+            String email = savedOrder.getUser().getEmail();
+        }
+
+        // Safely initialize the persistent bag without replacing the collection
+        // reference
+        // (which prevents the 'orphan deletion no longer referenced' Hibernate
+        // exception)
+        if (savedOrder.getOrderItems() != null) {
+            savedOrder.getOrderItems().size();
+            for (OrderItem item : savedOrder.getOrderItems()) {
+                if (item.getProduct() != null && item.getProduct().getImages() != null) {
+                    item.getProduct().getImages().size();
+                }
+            }
+        }
+
+        return savedOrder;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OrderItem getOrderItemById(Long id) throws Exception {
-        return orderItemRepository.findById(id).orElseThrow(() -> new Exception("order item not exist ..."));
+        OrderItem item = orderItemRepository.findById(id).orElseThrow(() -> new Exception("order item not exist ..."));
+        if (item.getProduct() != null && item.getProduct().getImages() != null) {
+            item.getProduct().getImages().size();
+        }
+        return item;
     }
 
     @Override
@@ -178,5 +217,21 @@ public class OrderServiceImpl implements OrderService {
 
         order.setOrderStatus(OrderStatus.CANCELLED);
         return orderRepository.save(order);
+    }
+
+    @Override
+    @Transactional
+    public void deleteOrder(Long orderId) throws Exception {
+        Order order = findOrderById(orderId);
+
+        // Find if this order is tied to any payment orders, to cleanly break the
+        // ManyToMany/OneToMany join constraints
+        java.util.List<PaymentOrder> paymentOrders = paymentOrderRepository.findByOrderId(orderId);
+        for (PaymentOrder po : paymentOrders) {
+            po.getOrders().remove(order);
+            paymentOrderRepository.save(po);
+        }
+
+        orderRepository.delete(order);
     }
 }

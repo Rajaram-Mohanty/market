@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Paper,
-  Button,
   styled,
   tableCellClasses,
   TableCell,
@@ -15,6 +14,8 @@ import {
   TableRow,
   TableBody,
 } from "@mui/material";
+import { useAppDispatch, useAppSelector } from "../../../state/store";
+import { fetchSellers, updateSellerStatus } from "../../../state/seller/sellerSlice";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -30,110 +31,93 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
     backgroundColor: theme.palette.action.hover,
   },
-  // hide last border
   "&:last-child td, &:last-child th": {
     border: 0,
   },
 }));
 
-function createData(
-  name: string,
-  calories: number,
-  fat: number,
-  carbs: number,
-  protein: number,
-) {
-  return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-  createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-  createData("Eclair", 262, 16.0, 24, 6.0),
-  createData("Cupcake", 305, 3.7, 67, 4.3),
-  createData("Gingerbread", 356, 16.0, 49, 3.9),
-];
-
-const accountStatus = [
-  {
-    status: "PENDING_VERIFICATION",
-    title: "Pending Verification",
-    description: "Seller's account is pending verification",
-  },
-  {
-    status: "ACTIVE",
-    title: "Active",
-    description: "Seller's account is active",
-  },
-  {
-    status: "SUSPENDED",
-    title: "Suspended",
-    description: "Seller's account is suspended",
-  },
-  {
-    status: "DEACTIVATED",
-    title: "Deactivated",
-    description: "Seller's account is deactivated",
-  },
-  {
-    status: "BANNED",
-    title: "Banned",
-    description: "Seller's account is banned",
-  },
-  {
-    status: "CLOSED",
-    title: "Closed",
-    description: "Seller's account is closed",
-  },
+const accountStatuses = [
+  { status: "PENDING_VERIFICATION", title: "Pending Verification" },
+  { status: "ACTIVE", title: "Active" },
+  { status: "SUSPENDED", title: "Suspended" },
+  { status: "DEACTIVATED", title: "Deactivated" },
+  { status: "BANNED", title: "Banned" },
+  { status: "CLOSED", title: "Closed" },
 ];
 
 const SellerTable = () => {
-  const [status, setStatus] = useState("ACTIVE");
+  const [statusFilter, setStatusFilter] = useState("PENDING_VERIFICATION");
+  const dispatch = useAppDispatch();
+  const { sellers } = useAppSelector((store) => store.seller);
+
+  useEffect(() => {
+    dispatch(fetchSellers(statusFilter !== "ALL" ? statusFilter : ""));
+  }, [statusFilter, dispatch]);
+
+  const handleStatusChange = (sellerId: number, newStatus: string) => {
+    dispatch(updateSellerStatus({ id: sellerId, status: newStatus }));
+  };
 
   return (
-    <div className="pb-5">
-      <FormControl fullWidth sx={{ width: 300 }}>
-        <InputLabel>Account Status</InputLabel>
-        <Select
-          value={status}
-          label="Account Status"
-          onChange={(e) => setStatus(e.target.value)}
-        >
-          {accountStatus.map((item) => (
-            <MenuItem key={item.status} value={item.status}>
-              {item.title}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+    <div className="pb-5 p-5">
+      <div className="flex justify-between items-center mb-5">
+        <h1 className="text-2xl font-bold">Manage Sellers</h1>
+        <FormControl sx={{ width: 250 }}>
+          <InputLabel>Filter By Status</InputLabel>
+          <Select
+            value={statusFilter}
+            label="Filter By Status"
+            onChange={(e) => setStatusFilter(e.target.value as string)}
+          >
+            <MenuItem value="ALL">All Statuses</MenuItem>
+            {accountStatuses.map((item) => (
+              <MenuItem key={item.status} value={item.status}>
+                {item.title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </div>
 
       <div className="mt-5">
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
             <TableHead>
               <TableRow>
-                <StyledTableCell align="center">Order ID</StyledTableCell>
-                <StyledTableCell align="center">Products</StyledTableCell>
-                <StyledTableCell align="center">
-                  Shipping Address
-                </StyledTableCell>
-                <StyledTableCell align="center">Order Status</StyledTableCell>
-                <StyledTableCell align="center">Update</StyledTableCell>
+                <StyledTableCell align="center">Seller Name</StyledTableCell>
+                <StyledTableCell align="center">Business Email</StyledTableCell>
+                <StyledTableCell align="center">GSTIN</StyledTableCell>
+                <StyledTableCell align="center">Mobile</StyledTableCell>
+                <StyledTableCell align="center">Account Status</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
-                <StyledTableRow key={row.name}>
+              {sellers?.map((seller: any) => (
+                <StyledTableRow key={seller.id}>
                   <StyledTableCell align="center" component="th" scope="row">
-                    {row.name}
+                    {seller.sellerName}
                   </StyledTableCell>
+                  <StyledTableCell align="center">{seller.email}</StyledTableCell>
+                  <StyledTableCell align="center" className="font-mono">{seller.GSTIN}</StyledTableCell>
+                  <StyledTableCell align="center">{seller.mobile}</StyledTableCell>
                   <StyledTableCell align="center">
-                    {row.calories}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">{row.fat}</StyledTableCell>
-                  <StyledTableCell align="center">{row.carbs}</StyledTableCell>
-                  <StyledTableCell align="center">
-                    {row.protein}
+                    <FormControl size="small" sx={{ width: 180 }}>
+                      <Select
+                        value={seller.accountStatus}
+                        onChange={(e) => handleStatusChange(seller.id, e.target.value)}
+                        className={`text-xs font-semibold ${
+                          seller.accountStatus === "ACTIVE"
+                            ? "text-green-600 bg-green-50"
+                            : "text-red-600 bg-red-50"
+                        }`}
+                      >
+                        {accountStatuses.map((item) => (
+                          <MenuItem key={item.status} value={item.status}>
+                            {item.title}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </StyledTableCell>
                 </StyledTableRow>
               ))}

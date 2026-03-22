@@ -1,6 +1,5 @@
 package org.projects.market.service.impl;
 
-
 import lombok.RequiredArgsConstructor;
 import org.projects.market.model.Product;
 import org.projects.market.model.User;
@@ -23,21 +22,55 @@ public class WishlistServiceImpl implements WishlistService {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional
     public Wishlist getWishlistByUserId(User user) {
         Wishlist wishlist = wishlistRepository.findByUserId(user.getId());
-        if(wishlist==null){
+        if (wishlist == null) {
             wishlist = createWishlist(user);
         }
+
+        // Force deep proxy initialization
+        if (wishlist.getProducts() != null) {
+            wishlist.getProducts().size();
+            for (Product p : wishlist.getProducts()) {
+                if (p.getImages() != null)
+                    p.getImages().size();
+            }
+        }
+
         return wishlist;
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional
     public Wishlist addProductToWishlist(User user, Product product) {
         Wishlist wishlist = getWishlistByUserId(user);
-        if(wishlist.getProducts().contains(product)){
-            wishlist.getProducts().remove(product);
+
+        boolean found = false;
+        java.util.Iterator<Product> iterator = wishlist.getProducts().iterator();
+        while (iterator.hasNext()) {
+            Product p = iterator.next();
+            if (p.getId().equals(product.getId())) {
+                iterator.remove();
+                found = true;
+                break;
+            }
         }
-        else wishlist.getProducts().add(product);
-        return wishlistRepository.save(wishlist);
+
+        if (!found) {
+            wishlist.getProducts().add(product);
+        }
+
+        Wishlist savedWishlist = wishlistRepository.save(wishlist);
+
+        if (savedWishlist.getProducts() != null) {
+            savedWishlist.getProducts().size();
+            for (Product p : savedWishlist.getProducts()) {
+                if (p.getImages() != null)
+                    p.getImages().size();
+            }
+        }
+
+        return savedWishlist;
     }
 }

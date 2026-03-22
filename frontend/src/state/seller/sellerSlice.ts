@@ -64,6 +64,34 @@ export const becomeSeller = createAsyncThunk<any, any>(
   },
 );
 
+export const fetchSellers = createAsyncThunk<any, string>(
+  "/sellers/fetchSellers",
+  async (status, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/sellers${status ? `?status=${status}` : ""}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
+      });
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to fetch sellers");
+    }
+  }
+);
+
+export const updateSellerStatus = createAsyncThunk<any, { id: number; status: string }>(
+  "/sellers/updateSellerStatus",
+  async ({ id, status }, { rejectWithValue }) => {
+    try {
+      const response = await api.patch(`/api/seller/${id}/status/${status}`, {}, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
+      });
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to update seller status");
+    }
+  }
+);
+
 interface SellerState {
   sellers: any[];
   selectedSeller: any;
@@ -122,6 +150,21 @@ const sellerSlice = createSlice({
     builder.addCase(becomeSeller.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload;
+    });
+
+    builder.addCase(fetchSellers.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(fetchSellers.fulfilled, (state, action) => {
+      state.loading = false;
+      state.sellers = action.payload;
+    });
+
+    builder.addCase(updateSellerStatus.fulfilled, (state, action) => {
+      const index = state.sellers.findIndex((s) => s.id === action.payload.id);
+      if (index !== -1) {
+        state.sellers[index] = action.payload;
+      }
     });
   },
 });

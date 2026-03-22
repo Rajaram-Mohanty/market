@@ -54,8 +54,7 @@ public class OrderController {
             paymentOrder.setPaymentLinkId(paymentUrlId);
             paymentOrderRepository.save(paymentOrder);
 
-        }
-        else {
+        } else {
             String paymentUrl = paymentService.createStripePaymentLink(user,
                     paymentOrder.getAmount(),
                     paymentOrder.getId());
@@ -101,10 +100,21 @@ public class OrderController {
         Seller seller = sellerService.getSellerById(order.getSellerId());
         SellerReport report = sellerReportService.getSellerReport(seller);
 
-        report.setCanceledOrders(report.getCanceledOrders()+1);
-        report.setTotalRefunds(report.getTotalRefunds()+order.getTotalSellingPrice());
+        report.setCanceledOrders(report.getCanceledOrders() + 1);
+        report.setTotalRefunds(report.getTotalRefunds() + order.getTotalSellingPrice());
         sellerReportService.updateSellerReport(report);
 
         return ResponseEntity.ok(order);
+    }
+
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<org.projects.market.response.ApiResponse> deleteOrderHandler(
+            @PathVariable Long orderId,
+            @RequestHeader("Authorization") String jwt) throws Exception {
+        User user = userService.findUserByJwtToken(jwt);
+        orderService.deleteOrder(orderId);
+        org.projects.market.response.ApiResponse res = new org.projects.market.response.ApiResponse();
+        res.setMessage("Order deleted successfully");
+        return new ResponseEntity<>(res, HttpStatus.OK);
     }
 }

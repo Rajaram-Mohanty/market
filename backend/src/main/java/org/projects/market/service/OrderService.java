@@ -1,6 +1,5 @@
 package org.projects.market.service;
 
-
 import org.projects.market.domain.OrderStatus;
 import org.projects.market.model.*;
 
@@ -15,23 +14,24 @@ public interface OrderService {
 
     public List<Order> usersOrderHistory(Long userId);
 
-    public List<Order>  sellersOrder(Long seller);
+    public List<Order> sellersOrder(Long seller);
 
     public Order updateOrderStatus(Long orderId, OrderStatus orderStatus) throws Exception;
 
     public OrderItem getOrderItemById(Long orderId) throws Exception;
 
-//    public Order placedOrder(Long orderId);
-//
-//    public Order confirmedOrder(Long orderId);
-//
-//    public Order shippedOrder(Long orderId);
-//
-//    public Order deliveredOrder(Long orderId);
-//
+    // public Order placedOrder(Long orderId);
+    //
+    // public Order confirmedOrder(Long orderId);
+    //
+    // public Order shippedOrder(Long orderId);
+    //
+    // public Order deliveredOrder(Long orderId);
+    //
     public Order cancelOrder(Long orderId, User user) throws Exception;
-//
-//    public List<Order> getAllOrders();
-//
-//    public void deleteOrder(Long orderId);
+
+    //
+    // public List<Order> getAllOrders();
+    //
+    public void deleteOrder(Long orderId) throws Exception;
 }

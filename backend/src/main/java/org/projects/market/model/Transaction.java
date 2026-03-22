@@ -1,11 +1,9 @@
 package org.projects.market.model;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-
 
 @Entity
 @Getter
@@ -20,9 +18,11 @@ public class Transaction {
     private Long id;
 
     @ManyToOne
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({ "addresses" })
     private User customer;
 
     @OneToOne
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({ "orderItems", "user", "paymentDetails" })
     private Order order;
 
     @ManyToOne
