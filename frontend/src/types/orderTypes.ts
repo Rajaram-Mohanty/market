@@ -31,6 +31,8 @@ export interface Order {
 
 export const OrderStatus = {
   PENDING: "PENDING",
+  PLACED: "PLACED",
+  CONFIRMED: "CONFIRMED",
   SHIPPED: "SHIPPED",
   DELIVERED: "DELIVERED",
   CANCELLED: "CANCELLED",

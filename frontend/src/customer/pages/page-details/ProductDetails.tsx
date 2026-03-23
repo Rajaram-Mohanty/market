@@ -7,7 +7,6 @@ import {
   AddShoppingCart,
   FavoriteBorder,
   LocalShipping,
-  RateReview,
   Remove,
   Shield,
   Wallet,
@@ -175,13 +174,6 @@ const ProductDetails = () => {
           <div className="mt-12 space-y-5">
             <div className="flex items-center justify-between">
               <h2 className="font-bold text-base">Customer Reviews ({review.reviews.length})</h2>
-              <Button
-                size="small"
-                startIcon={<RateReview />}
-                onClick={() => navigate(`/reviews/${productId}/create`)}
-              >
-                Write Review
-              </Button>
             </div>
             {review.reviews.slice(0, 3).map((r) => (
               <div key={r.id}>

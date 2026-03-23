@@ -17,12 +17,10 @@ const Orders = () => {
         <h1 className="font-semibold">All orders</h1>
         <p>from anytime</p>
       </div>
-      <div className="space-y-2">
-        {order.orders.map((order) =>
-          order.orderItems?.map((item) => (
-            <OrderItemCard order={order} item={item} />
-          )),
-        )}
+      <div className="space-y-4">
+        {order.orders.map((order) => (
+          <OrderItemCard key={order.id} order={order} />
+        ))}
       </div>
     </div>
   );

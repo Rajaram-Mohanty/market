@@ -3,38 +3,20 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 
 const steps = [
-  { name: "Order Placed", description: "on Monday, 30 Sep", value: "PLACED" },
-  { name: "Packed", description: "Item packed in warehouse", value: "PACKED" },
-  { name: "Shipped", description: "on Tuesday, 01 Oct", value: "SHIPPED" },
-  { name: "Arriving", description: "on Friday, 04 Oct", value: "ARRIVING" },
-  { name: "Arrived", description: "Delivered", value: "DELIVERED" },
-];
-
-const cancelStep = [
-  { name: "Order Placed", description: "on Monday, 30 Sep", value: "PLACED" },
-  {
-    name: "Order Cancelled",
-    description: "Cancelled on Tuesday, 01 Oct",
-    value: "CANCELLED",
-  },
+  { name: "PENDING", description: "Order is pending", value: "PENDING" },
+  { name: "PLACED", description: "Order has been placed", value: "PLACED" },
+  { name: "CONFIRMED", description: "Order has been confirmed", value: "CONFIRMED" },
+  { name: "SHIPPED", description: "Order has been shipped", value: "SHIPPED" },
+  { name: "DELIVERED", description: "Order has been delivered", value: "DELIVERED" },
+  { name: "CANCELLED", description: "Order has been cancelled", value: "CANCELLED" },
 ];
 
 const OrderStepper = ({ orderStatus }: any) => {
-  const [statusStep, setStatusStep] = useState(steps);
-
-  useEffect(() => {
-    if (orderStatus === "CANCELLED") {
-      setStatusStep(cancelStep);
-    } else {
-      setStatusStep(steps);
-    }
-  }, [orderStatus]);
-
-  const currentStep = statusStep.findIndex((step) => step.value === orderStatus);
+  const currentStep = steps.findIndex((step) => step.value === orderStatus);
 
   return (
     <div className="mx-auto my-10">
-      {statusStep.map((step, index) => (
+      {steps.map((step, index) => (
         <div key={index} className="flex px-4">
           <div className="flex flex-col items-center">
             <div
@@ -48,7 +30,7 @@ const OrderStepper = ({ orderStatus }: any) => {
               )}
             </div>
 
-            {index < statusStep.length - 1 && (
+            {index < steps.length - 1 && (
               <div
                 className={`h-20 w-[2px] ${index < currentStep ? "bg-teal-500" : "bg-gray-300"}`}
               ></div>

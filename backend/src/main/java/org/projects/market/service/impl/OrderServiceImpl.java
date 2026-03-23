@@ -9,6 +9,7 @@ import org.projects.market.repository.OrderItemRepository;
 import org.projects.market.repository.OrderRepository;
 import org.projects.market.repository.PaymentOrderRepository;
 import org.projects.market.repository.ProductRepository;
+import org.projects.market.repository.TransactionRepository;
 import org.projects.market.repository.UserRepository;
 import org.projects.market.service.CartService;
 import org.projects.market.service.OrderService;
@@ -30,6 +31,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
     private final PaymentOrderRepository paymentOrderRepository;
+    private final TransactionRepository transactionRepository;
 
     @Override
     @org.springframework.transaction.annotation.Transactional
@@ -230,6 +232,12 @@ public class OrderServiceImpl implements OrderService {
         for (PaymentOrder po : paymentOrders) {
             po.getOrders().remove(order);
             paymentOrderRepository.save(po);
+        }
+
+        // break any Transaction constraints
+        Transaction transaction = transactionRepository.findByOrderId(orderId);
+        if (transaction != null) {
+            transactionRepository.delete(transaction);
         }
 
         orderRepository.delete(order);
