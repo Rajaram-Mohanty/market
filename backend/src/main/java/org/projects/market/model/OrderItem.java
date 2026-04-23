@@ -19,10 +19,10 @@ public class OrderItem {
     private Long id;
 
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Order order ;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Product product ;
 
     private String size;

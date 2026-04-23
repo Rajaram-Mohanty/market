@@ -7,9 +7,11 @@ import org.projects.market.model.Wishlist;
 import org.projects.market.repository.WishlistRepository;
 import org.projects.market.service.WishlistService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class WishlistServiceImpl implements WishlistService {
 
     private final WishlistRepository wishlistRepository;
@@ -22,55 +24,31 @@ public class WishlistServiceImpl implements WishlistService {
     }
 
     @Override
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional(readOnly = true)
     public Wishlist getWishlistByUserId(User user) {
         Wishlist wishlist = wishlistRepository.findByUserId(user.getId());
         if (wishlist == null) {
             wishlist = createWishlist(user);
         }
-
-        // Force deep proxy initialization
-        if (wishlist.getProducts() != null) {
-            wishlist.getProducts().size();
-            for (Product p : wishlist.getProducts()) {
-                if (p.getImages() != null)
-                    p.getImages().size();
-            }
-        }
-
         return wishlist;
     }
 
     @Override
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Wishlist addProductToWishlist(User user, Product product) {
         Wishlist wishlist = getWishlistByUserId(user);
 
-        boolean found = false;
-        java.util.Iterator<Product> iterator = wishlist.getProducts().iterator();
-        while (iterator.hasNext()) {
-            Product p = iterator.next();
-            if (p.getId().equals(product.getId())) {
-                iterator.remove();
-                found = true;
-                break;
-            }
-        }
+        // Toggle logic: if product is already in the wishlist, remove it. Otherwise, add it.
+        boolean removed = wishlist.getProducts().removeIf(p -> p.getId().equals(product.getId()));
 
-        if (!found) {
+        if (!removed) {
             wishlist.getProducts().add(product);
         }
 
-        Wishlist savedWishlist = wishlistRepository.save(wishlist);
-
-        if (savedWishlist.getProducts() != null) {
-            savedWishlist.getProducts().size();
-            for (Product p : savedWishlist.getProducts()) {
-                if (p.getImages() != null)
-                    p.getImages().size();
-            }
-        }
-
-        return savedWishlist;
+        // Return the actively managed wishlist directly.
+        // Hibernate's dirty checking will automatically flush the collection changes (INSERT/DELETE)
+        // without calling .save(). This prevents em.merge() from converting the detached Product's
+        // plain ArrayList images back into an uninitialized PersistentBag proxy.
+        return wishlist;
     }
 }

@@ -43,7 +43,7 @@ export const fetchAllCoupons = createAsyncThunk<
   { rejectValue: string }
 >("coupon/fetchAllCoupons", async (jwt, { rejectWithValue }) => {
   try {
-    const response = await api.get(`${API_URL}/admin/all`, {
+    const response = await api.get(`${API_URL}`, {
       headers: {
         Authorization: `Bearer ${jwt}`,
       },

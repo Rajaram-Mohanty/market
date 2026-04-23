@@ -38,11 +38,10 @@ public class Order {
 
     private Long sellerId;
 
-    @BatchSize(size = 20)
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Address shippingAddress;
 
     @Embedded
@@ -63,4 +62,9 @@ public class Order {
     private LocalDateTime orderDate = LocalDateTime.now();
 
     private LocalDateTime deliverDate = orderDate.plusDays(7);
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @jakarta.persistence.JoinColumn(name = "payment_order_id")
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private PaymentOrder paymentOrder;
 }

@@ -36,7 +36,8 @@ public class Seller {
     @Embedded
     private BankDetails bankDetails = new BankDetails();
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "pickupaddress_id")
     private Address pickupAddress = new Address();
 
     private String GSTIN;

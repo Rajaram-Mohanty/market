@@ -210,6 +210,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public Order cancelOrder(Long orderId, User user) throws Exception {
         Order order = findOrderById(orderId);
 

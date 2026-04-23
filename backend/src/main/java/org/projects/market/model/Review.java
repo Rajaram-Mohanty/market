@@ -29,12 +29,11 @@ public class Review {
     @Column(nullable = false)
     private double rating;
 
-    @BatchSize(size = 20)
     @ElementCollection
     private List<String> productImages;
 
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
     @ManyToOne(fetch = FetchType.LAZY)

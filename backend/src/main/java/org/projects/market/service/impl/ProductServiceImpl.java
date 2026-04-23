@@ -38,6 +38,7 @@ public class ProductServiceImpl implements ProductService {
     private final ReviewRepository reviewRepository;
 
     @Override
+    @Transactional
     public Product createProduct(CreateProductRequest req, Seller seller) {
         Category category1 = categoryRepository.findByCategoryId(req.getCategory());
 
@@ -96,12 +97,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public void deleteProduct(Long productId) throws ProductException {
         Product product = findProductById(productId);
         productRepository.delete(product);
     }
 
     @Override
+    @Transactional
     public Product updateProduct(Long productId, CreateProductRequest req) throws ProductException {
         Product product = findProductById(productId);
 
@@ -205,11 +208,19 @@ public class ProductServiceImpl implements ProductService {
             String sort, String stock, Integer pageNumber) {
 
         Specification<Product> spec = (root, query, criteriaBuilder) -> {
+            
+            // Apply fetch joins only for the actual query, not the COUNT query (which returns Long)
+            if (Long.class != query.getResultType() && long.class != query.getResultType()) {
+                root.fetch("category", jakarta.persistence.criteria.JoinType.LEFT);
+                jakarta.persistence.criteria.Fetch<Product, Seller> sellerFetch = root.fetch("seller", jakarta.persistence.criteria.JoinType.LEFT);
+                sellerFetch.fetch("pickupAddress", jakarta.persistence.criteria.JoinType.LEFT);
+            }
+            
             List<Predicate> predicates = new ArrayList<>();
 
             // Filtering by Category
             if (category != null && !category.isBlank()) {
-                Join<Product, Category> categoryJoin = root.join("category");
+                Join<Product, Category> categoryJoin = root.join("category", jakarta.persistence.criteria.JoinType.INNER);
                 predicates.add(criteriaBuilder.equal(categoryJoin.get("categoryId"), category));
             }
 

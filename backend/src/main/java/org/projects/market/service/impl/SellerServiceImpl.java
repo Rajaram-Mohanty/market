@@ -11,11 +11,13 @@ import org.projects.market.repository.SellerRepository;
 import org.projects.market.service.SellerService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class SellerServiceImpl implements SellerService {
 
     private final SellerRepository sellerRepository;
@@ -67,6 +69,9 @@ public class SellerServiceImpl implements SellerService {
 
     @Override
     public List<Seller> getAllSellers(AccountStatus status) {
+        if (status == null) {
+            return sellerRepository.findAll();
+        }
         return sellerRepository.findByAccountStatus(status);
     }
 

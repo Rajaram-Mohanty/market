@@ -29,6 +29,7 @@ public class Coupon {
     private Boolean isActive = true;
 
     @ManyToMany(mappedBy = "usedCoupons")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Set<User> usedByUsers = new HashSet<>();
 
     private double minimumOrderValue;

@@ -25,8 +25,7 @@ public class Category {
     @Column(unique = true)
     private String categoryId;
 
-    @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Category parentCategory;
 
     @NotNull

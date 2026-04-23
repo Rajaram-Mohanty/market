@@ -27,7 +27,7 @@ public class AppConfig {
                 .authorizeHttpRequests(Authorize -> Authorize
 
                         // ── PUBLIC ──────────────────────────────────────────────────────────
-                        .requestMatchers("/api/products/*/reviews").permitAll()
+                        .requestMatchers("/api/product/*/reviews").permitAll()
                         .requestMatchers("/sellers/login", "/sellers").permitAll() // seller register & login
 
                         // ── ADMIN only ───────────────────────────────────────────────────────

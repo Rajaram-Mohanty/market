@@ -42,11 +42,15 @@ public class User {
 
     private USER_ROLE role = USER_ROLE.ROLE_COSTUMER;
 
-    @BatchSize(size = 20)
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Address> addresses = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_used_coupons",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "coupon_id")
+    )
     @JsonIgnore // @JsonIgnore: Completely hides a field from Jackson, preventing it from being
                 // sent to the client and preventing it from being received/updated by the
                 // client's JSON. We dont need the used coupons to check as they are already

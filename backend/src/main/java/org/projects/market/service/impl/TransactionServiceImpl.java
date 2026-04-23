@@ -8,11 +8,13 @@ import org.projects.market.repository.SellerRepository;
 import org.projects.market.repository.TransactionRepository;
 import org.projects.market.service.TransactionService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;

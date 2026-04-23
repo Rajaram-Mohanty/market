@@ -21,6 +21,7 @@ import Auth from "./customer/pages/auth/Auth";
 import PaymentSuccess from "./customer/pages/PaymentSuccess";
 import Wishlist from "./customer/wishlist/Wishlist";
 import RequireAuth from "./component/RequireAuth";
+import GlobalSnackbar from "./component/GlobalSnackbar";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -52,6 +53,7 @@ function App() {
   return (
     <ThemeProvider theme={customTheme}>
       <div>
+        <GlobalSnackbar />
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />

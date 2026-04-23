@@ -15,6 +15,7 @@ public class Deal {
 
     private Integer discount;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
     private HomeCategory category;
 }

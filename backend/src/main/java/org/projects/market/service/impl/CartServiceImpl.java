@@ -9,9 +9,11 @@ import org.projects.market.repository.CartItemRepository;
 import org.projects.market.repository.CartRepository;
 import org.projects.market.service.CartService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepository;
@@ -28,6 +30,7 @@ public class CartServiceImpl implements CartService {
             cart.setUser(user);
             return cartRepository.save(cart);
         }
+
 
         // Calculate total price and total items dynamically [09:08:20]
         int totalPrice = 0;
@@ -49,12 +52,12 @@ public class CartServiceImpl implements CartService {
     }
 
     private int calculateDiscountPercentage(int mrpPrice, int sellingPrice) {
-        if(mrpPrice<=0){
+        if (mrpPrice <= 0) {
             return 0;
         }
-        double discount = mrpPrice-sellingPrice;
-        double discountPercentage = (discount/100)*100;
-        return (int)discountPercentage;
+        double discount = mrpPrice - sellingPrice;
+        double discountPercentage = (discount / mrpPrice) * 100;
+        return (int) discountPercentage;
     }
 
     @Override

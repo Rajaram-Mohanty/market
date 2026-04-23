@@ -17,26 +17,24 @@ import java.util.Optional;
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
     @Override
-    @EntityGraph(attributePaths = { "category", "images", "seller", "seller.pickupAddress" })
-    Optional<Product> findById(Long id);
+    @Query("SELECT p FROM Product p LEFT JOIN FETCH p.category LEFT JOIN FETCH p.images LEFT JOIN FETCH p.seller s LEFT JOIN FETCH s.pickupAddress WHERE p.id = :id")
+    Optional<Product> findById(@Param("id") Long id);
 
-    // Simple pageable listing with proactive fetch of seller and pickupAddress
+    // Simple pageable listing — load category + seller to avoid lazy proxy errors in JSON
     @Override
-    @EntityGraph(attributePaths = { "category", "seller", "seller.pickupAddress" })
+    @Query(value = "SELECT p FROM Product p LEFT JOIN FETCH p.category LEFT JOIN FETCH p.seller s LEFT JOIN FETCH s.pickupAddress",
+           countQuery = "SELECT COUNT(p) FROM Product p")
     Page<Product> findAll(Pageable pageable);
 
-    // Specification-based listing with the same graph
-    @Override
-    @EntityGraph(attributePaths = { "category", "seller", "seller.pickupAddress" })
-    Page<Product> findAll(Specification<Product> spec, Pageable pageable);
+    // Specification-based listing uses entity graph or dynamic fetch inside Specification
+    // so we don't override the query here to not break Specification mapping.
 
     // Seller-specific products with nested seller data
-    @EntityGraph(attributePaths = { "category", "seller", "seller.pickupAddress" })
+    @Query("SELECT p FROM Product p LEFT JOIN FETCH p.category LEFT JOIN FETCH p.seller s LEFT JOIN FETCH s.pickupAddress WHERE p.seller.id = :sellerId")
     List<Product> findBySellerId(@Param("sellerId") Long sellerId);
 
     // Search with the same graph
-    @EntityGraph(attributePaths = { "category", "seller", "seller.pickupAddress" })
-    @Query("SELECT p FROM Product p WHERE " +
+    @Query("SELECT p FROM Product p LEFT JOIN FETCH p.category LEFT JOIN FETCH p.seller s LEFT JOIN FETCH s.pickupAddress WHERE " +
             "(:query IS NULL OR LOWER(p.title) " +
             "LIKE LOWER(CONCAT('%', :query, '%'))) " +
             "OR (:query IS NULL OR LOWER(p.category.name)" +

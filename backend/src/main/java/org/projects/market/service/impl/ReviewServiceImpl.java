@@ -77,6 +77,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional
     public Review updateReview(Long reviewId, String reviewText, double rating, Long userId) throws Exception {
 
         Review review = getReviewById(reviewId);
@@ -92,6 +93,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional
     public void deleteReview(Long reviewId, Long userId) throws Exception {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new Exception("Review not found"));
@@ -105,8 +107,14 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Review getReviewById(Long reviewId) throws Exception {
-        return reviewRepository.findById(reviewId)
+        Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new Exception("Review not found"));
+        // Initialize lazy collection for JSON serialization
+        if (review.getProductImages() != null) {
+            review.getProductImages().size();
+        }
+        return review;
     }
 }

@@ -127,15 +127,17 @@ export default function DealTable() {
               </StyledTableCell>
               <StyledTableCell align="center">
                 <div className="flex justify-center">
-                  <img
-                    className="w-20 rounded-md"
-                    src={item.category.image}
-                    alt=""
-                  />
+                  {item.category?.image && (
+                    <img
+                      className="w-20 rounded-md"
+                      src={item.category.image}
+                      alt=""
+                    />
+                  )}
                 </div>
               </StyledTableCell>
               <StyledTableCell align="center">
-                {item.category.categoryId}
+                {item.category?.categoryId}
               </StyledTableCell>
               <StyledTableCell align="center">{item.discount}</StyledTableCell>
               <StyledTableCell align="center">

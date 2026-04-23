@@ -6,9 +6,11 @@ import org.projects.market.model.SellerReport;
 import org.projects.market.repository.SellerReportRepository;
 import org.projects.market.service.SellerReportService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class SellerReportServiceImpl implements SellerReportService {
 
     private final SellerReportRepository sellerReportRepository;

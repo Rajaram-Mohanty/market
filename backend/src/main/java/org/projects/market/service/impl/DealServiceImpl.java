@@ -7,11 +7,13 @@ import org.projects.market.repository.DealRepository;
 import org.projects.market.repository.HomeCategoryRepository;
 import org.projects.market.service.DealService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class DealServiceImpl implements DealService {
 
     private final DealRepository dealRepository;

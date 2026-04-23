@@ -129,6 +129,7 @@ const AddProductForm = () => {
         <Grid size={{ xs: 12 }}>
           <TextField
             fullWidth
+            required
             name="title"
             label="Title"
             value={formik.values.title}
@@ -139,6 +140,7 @@ const AddProductForm = () => {
           <TextField
             fullWidth
             multiline
+            required
             rows={4}
             name="description"
             label="Description"
@@ -149,6 +151,7 @@ const AddProductForm = () => {
         <Grid size={{ xs: 12, md: 4, lg: 3 }}>
           <TextField
             fullWidth
+            required
             name="mrpPrice"
             label="MRP Price"
             type="number"
@@ -159,6 +162,7 @@ const AddProductForm = () => {
         <Grid size={{ xs: 12, md: 4, lg: 3 }}>
           <TextField
             fullWidth
+            required
             name="sellingPrice"
             label="Selling Price"
             type="number"
@@ -169,6 +173,7 @@ const AddProductForm = () => {
         <Grid size={{ xs: 12, md: 4, lg: 3 }}>
           <TextField
             fullWidth
+            required
             name="color"
             label="Color"
             value={formik.values.color}
@@ -187,7 +192,7 @@ const AddProductForm = () => {
 
         {/* Category Selection */}
         <Grid size={{ xs: 12, md: 4 }}>
-          <FormControl fullWidth>
+          <FormControl fullWidth required>
             <InputLabel>Category</InputLabel>
             <Select
               name="category"
@@ -205,7 +210,7 @@ const AddProductForm = () => {
         </Grid>
 
         <Grid size={{ xs: 12, md: 4 }}>
-          <FormControl fullWidth>
+          <FormControl fullWidth required>
             <InputLabel>Level 2 Category</InputLabel>
             <Select
               name="category2"
@@ -242,7 +247,7 @@ const AddProductForm = () => {
         </Grid>
 
         <Grid size={{ xs: 12, md: 4 }}>
-          <FormControl fullWidth>
+          <FormControl fullWidth required>
             <InputLabel>Level 3 Category</InputLabel>
             <Select
               name="category3"
