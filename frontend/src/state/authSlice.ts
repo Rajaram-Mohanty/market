@@ -4,7 +4,7 @@ import type { User } from "../types/userTypes";
 
 export const signIn = createAsyncThunk<any, any>(
   "/auth/signIn",
-  async ({ data, navigate }, { rejectWithValue }) => {
+  async ({ data, navigate, redirectTo }, { rejectWithValue }) => {
     try {
       const response = await api.post("/auth/signing", data);
       console.log("signIn response", response.data);
@@ -18,7 +18,7 @@ export const signIn = createAsyncThunk<any, any>(
       } else if (response.data.role === "ROLE_ADMIN") {
         navigate("/admin");
       } else {
-        navigate("/");
+        navigate(redirectTo || "/");
       }
 
       return response.data.jwt;
@@ -31,7 +31,7 @@ export const signIn = createAsyncThunk<any, any>(
 
 export const signup = createAsyncThunk<any, any>(
   "/auth/signup",
-  async ({ data, navigate }, { rejectWithValue }) => {
+  async ({ data, navigate, redirectTo }, { rejectWithValue }) => {
     try {
       const response = await api.post("/auth/signup", data);
       console.log("signup response", response.data);
@@ -45,7 +45,7 @@ export const signup = createAsyncThunk<any, any>(
       } else if (response.data.role === "ROLE_ADMIN") {
         navigate("/admin");
       } else {
-        navigate("/");
+        navigate(redirectTo || "/");
       }
 
       return response.data.jwt;

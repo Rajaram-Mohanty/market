@@ -15,7 +15,7 @@ import {
 import SimilarProduct from "./SimilarProduct";
 import ReviewCard from "../review/ReviewCard";
 import { useAppDispatch, useAppSelector } from "../../../state/store";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { fetchProductById } from "../../../state/customer/productSlice";
 import { addItemToCart } from "../../../state/customer/cartSlice";
 import { addProductToWishlist } from "../../../state/customer/wishlistSlice";
@@ -25,6 +25,7 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { productId } = useParams();
   const { product, review } = useAppSelector((store) => store);
   const [activeImage, setActiveImage] = useState(0);
@@ -38,7 +39,17 @@ const ProductDetails = () => {
     setActiveImage(value);
   };
 
+  const requireAuth = () => {
+    const jwt = localStorage.getItem("jwt");
+    if (!jwt) {
+      navigate("/login", { state: { from: location } });
+      return false;
+    }
+    return true;
+  };
+
   const handleAddToCart = () => {
+    if (!requireAuth()) return;
     dispatch(
       addItemToCart({
         jwt: localStorage.getItem("jwt"),
@@ -52,6 +63,7 @@ const ProductDetails = () => {
   };
 
   const handleAddToWishlist = () => {
+    if (!requireAuth()) return;
     dispatch(addProductToWishlist(Number(productId)));
   };
 

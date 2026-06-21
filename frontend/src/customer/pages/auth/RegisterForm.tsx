@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Button,
   CircularProgress,
@@ -23,6 +23,8 @@ const validationSchema = Yup.object({
 const RegisterForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = (location.state as any)?.from?.pathname || "/";
   const { auth } = useAppSelector((store) => store);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -30,7 +32,7 @@ const RegisterForm = () => {
     initialValues: { fullName: "", email: "", password: "" },
     validationSchema,
     onSubmit: (values) => {
-      dispatch(signup({ data: values, navigate }));
+      dispatch(signup({ data: values, navigate, redirectTo }));
     },
   });
 
