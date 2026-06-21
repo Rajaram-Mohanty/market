@@ -3,7 +3,8 @@ package org.projects.market.request;
 import lombok.Data;
 
 @Data
-public class LoginRequest {
+public class ResetPasswordRequest {
     private String email;
-    private String password;
+    private String otp;
+    private String newPassword;
 }

@@ -28,6 +28,7 @@ public class AppConfig {
 
                         // ── PUBLIC ──────────────────────────────────────────────────────────
                         .requestMatchers("/api/product/*/reviews").permitAll()
+                        .requestMatchers("/auth/**").permitAll()           // signup, login, forgot/reset-password
                         .requestMatchers("/sellers/login", "/sellers").permitAll() // seller register & login
 
                         // ── ADMIN only ───────────────────────────────────────────────────────

@@ -1,28 +1,38 @@
-import { Button, TextField } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { sendLoginSignupOtp } from "../../../state/authSlice";
+import {
+  Button,
+  CircularProgress,
+  TextField,
+  IconButton,
+  InputAdornment,
+  Alert,
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useFormik } from "formik";
+import * as Yup from "yup";
 import { useAppDispatch, useAppSelector } from "../../../state/store";
 import { signup } from "../../../state/authSlice";
+
+const validationSchema = Yup.object({
+  fullName: Yup.string().min(2, "Name must be at least 2 characters").required("Full name is required"),
+  email: Yup.string().email("Invalid email address").required("Email is required"),
+  password: Yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+});
 
 const RegisterForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
   const { auth } = useAppSelector((store) => store);
+  const [showPassword, setShowPassword] = useState(false);
 
   const formik = useFormik({
-    initialValues: { email: "", otp: "", fullName: "" },
+    initialValues: { fullName: "", email: "", password: "" },
+    validationSchema,
     onSubmit: (values) => {
-      console.log("form data", values);
       dispatch(signup({ data: values, navigate }));
     },
   });
-
-  const handleSendOtp = () => {
-    dispatch(sendLoginSignupOtp({ email: formik.values.email }));
-  };
 
   return (
     <div>
@@ -31,64 +41,64 @@ const RegisterForm = () => {
       </h1>
 
       <div className="space-y-5">
-        <div>
-          <TextField
-            fullWidth
-            name="email"
-            label="Email"
-            value={formik.values.email}
-            onChange={formik.handleChange}
-            error={formik.touched.email && Boolean(formik.errors.email)}
-            helperText={formik.touched.email && formik.errors.email}
-          />
-        </div>
-
-        {auth.otpSent && (
-          <div className="space-y-5">
-            <div className="space-y-2">
-              <p className="font-medium text-sm opacity-60">
-                Enter OTP sent to your email
-              </p>
-              <TextField
-                fullWidth
-                name="otp"
-                label="Enter OTP"
-                value={formik.values.otp}
-                onChange={formik.handleChange}
-                error={formik.touched.otp && Boolean(formik.errors.otp)}
-                helperText={formik.touched.otp && formik.errors.otp}
-              />
-            </div>
-
-            <TextField
-              fullWidth
-              name="fullName"
-              label="fullName"
-              value={formik.values.fullName}
-              onChange={formik.handleChange}
-              error={formik.touched.fullName && Boolean(formik.errors.fullName)}
-              helperText={formik.touched.fullName && formik.errors.fullName}
-            />
-          </div>
+        {auth.error && (
+          <Alert severity="error">
+            {typeof auth.error === "string" ? auth.error : "Registration failed. Please try again."}
+          </Alert>
         )}
 
-        {!auth.otpSent && (
-          <Button
-            fullWidth
-            variant="contained"
-            sx={{ py: "11px", my: 1 }}
-            onClick={handleSendOtp}
-          >
-            Send OTP
-          </Button>
-        )}
+        <TextField
+          fullWidth
+          name="fullName"
+          label="Full Name"
+          value={formik.values.fullName}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.fullName && Boolean(formik.errors.fullName)}
+          helperText={formik.touched.fullName && formik.errors.fullName}
+        />
+
+        <TextField
+          fullWidth
+          name="email"
+          label="Email"
+          type="email"
+          value={formik.values.email}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.email && Boolean(formik.errors.email)}
+          helperText={formik.touched.email && formik.errors.email}
+        />
+
+        <TextField
+          fullWidth
+          name="password"
+          label="Password"
+          type={showPassword ? "text" : "password"}
+          value={formik.values.password}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.password && Boolean(formik.errors.password)}
+          helperText={formik.touched.password && formik.errors.password}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+
         <Button
           onClick={() => formik.handleSubmit()}
           fullWidth
           variant="contained"
           sx={{ py: "11px", my: 1 }}
+          disabled={auth.loading}
         >
-          Signup
+          {auth.loading ? <CircularProgress size={24} color="inherit" /> : "Create Account"}
         </Button>
       </div>
     </div>

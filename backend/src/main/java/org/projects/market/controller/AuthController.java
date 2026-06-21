@@ -2,20 +2,17 @@ package org.projects.market.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.projects.market.domain.USER_ROLE;
-import org.projects.market.request.LoginOtpRequest;
 import org.projects.market.request.LoginRequest;
+import org.projects.market.request.ResetPasswordRequest;
 import org.projects.market.response.ApiResponse;
 import org.projects.market.response.AuthResponse;
 import org.projects.market.response.SignupRequest;
 import org.projects.market.service.AuthService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequiredArgsConstructor // why @Autowired is not used in the pdf
+@RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
 
@@ -34,24 +31,41 @@ public class AuthController {
         return ResponseEntity.ok(res);
     }
 
-    @PostMapping("/sent/login-signup-otp")
-    public ResponseEntity<ApiResponse> sendOtpHandler(@RequestBody LoginOtpRequest req) throws Exception {
-
-        authService.sentLoginOtp(req.getEmail(),req.getRole());
-
-
-        ApiResponse res = new ApiResponse();
-
-        res.setMessage("otp sent successfully");
-
-        return ResponseEntity.ok(res);
-    }
-
     @PostMapping("/signing")
-    public ResponseEntity<AuthResponse> sendOtpHandler(@RequestBody LoginRequest req) throws Exception {
+    public ResponseEntity<AuthResponse> signInHandler(@RequestBody LoginRequest req) throws Exception {
 
         AuthResponse authResponse = authService.signing(req);
 
         return ResponseEntity.ok(authResponse);
+    }
+
+    /**
+     * Step 1 of forgot password: user submits their email.
+     * Backend generates an OTP and emails it to them.
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse> forgotPasswordHandler(@RequestParam String email) throws Exception {
+
+        authService.forgotPassword(email);
+
+        ApiResponse res = new ApiResponse();
+        res.setMessage("A password reset OTP has been sent to your email.");
+
+        return ResponseEntity.ok(res);
+    }
+
+    /**
+     * Step 2 of forgot password: user submits email + OTP + new password.
+     * Backend verifies OTP and updates the password.
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse> resetPasswordHandler(@RequestBody ResetPasswordRequest req) throws Exception {
+
+        authService.resetPassword(req.getEmail(), req.getOtp(), req.getNewPassword());
+
+        ApiResponse res = new ApiResponse();
+        res.setMessage("Password reset successfully. You can now log in with your new password.");
+
+        return ResponseEntity.ok(res);
     }
 }

@@ -1,5 +1,6 @@
 package org.projects.market.service.impl;
 
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.projects.market.config.JwtProvider;
 import org.projects.market.domain.USER_ROLE;
@@ -41,82 +42,33 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final CartRepository cartRepository;
     private final JwtProvider jwtProvider;
-    private final VerificationCodeRepository verificationCodeRepository;
-    private final EmailService emailService;
     private final CustomUserServiceImpl customUserService;
     private final SellerRepository sellerRepository;
-
-    @Override
-    public void sentLoginOtp(String email, USER_ROLE role) throws Exception {
-        String SIGNING_PREFIX = "signing_";
-
-
-        if (email.startsWith(SIGNING_PREFIX)) {
-            email = email.substring(SIGNING_PREFIX.length());
-
-            if(role.equals(USER_ROLE.ROLE_SELLER)){
-                Seller seller = sellerRepository.findByEmail(email);
-                if (seller == null) {
-                    throw new Exception("Seller not found");
-                }
-
-            }
-
-            else{
-                User user = userRepository.findByEmail(email);
-                if (user == null) {
-                    throw new Exception("User not exist with the provided email");
-                }
-            }
-
-        }
-
-
-
-        VerificationCode isExist = verificationCodeRepository.findByEmail(email);
-
-        if (isExist != null) {
-            verificationCodeRepository.delete(isExist);
-        }
-
-        String otp = OtpUtil.generateOtp();
-
-        VerificationCode verificationCode = new VerificationCode();
-        verificationCode.setOtp(otp);
-        verificationCode.setEmail(email);
-        verificationCodeRepository.save(verificationCode);
-
-        String subject = " Market login/signup otp";
-        String text = "your login/signup otp is - " + otp;
-
-        emailService.sendVerificationOtpEmail(email, otp, subject, text);
-    }
+    private final VerificationCodeRepository verificationCodeRepository;
+    private final EmailService emailService;
 
     @Override
     public String createUser(SignupRequest req) throws Exception {
 
-        VerificationCode verificationCode = verificationCodeRepository.findByEmail(req.getEmail());
-
-        if (verificationCode == null || !verificationCode.getOtp().equals(req.getOtp())) {
-            throw new Exception("wrong otp...");
-        }
-
         User user = userRepository.findByEmail(req.getEmail());
 
-        if (user == null) {
-            User createdUser = new User();
-            createdUser.setEmail(req.getEmail());
-            createdUser.setFullName(req.getFullName());
-            createdUser.setRole(USER_ROLE.ROLE_COSTUMER);
-            createdUser.setMobile("7978724291");
-            createdUser.setPassword(passwordEncoder.encode(req.getOtp()));
-
-            user = userRepository.save(createdUser);
-
-            Cart cart = new Cart();
-            cart.setUser(user);
-            cartRepository.save(cart);
+        if (user != null) {
+            throw new Exception("An account with this email already exists.");
         }
+
+        User createdUser = new User();
+        createdUser.setEmail(req.getEmail());
+        createdUser.setFullName(req.getFullName());
+        createdUser.setRole(USER_ROLE.ROLE_COSTUMER);
+        createdUser.setMobile("0000000000");
+        createdUser.setPassword(passwordEncoder.encode(req.getPassword()));
+
+        user = userRepository.save(createdUser);
+
+        Cart cart = new Cart();
+        cart.setUser(user);
+        cartRepository.save(cart);
+
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(USER_ROLE.ROLE_COSTUMER.toString()));
 
@@ -127,11 +79,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthResponse signing(LoginRequest req) {
+    public AuthResponse signing(LoginRequest req) throws Exception {
         String username = req.getEmail();
-        String otp = req.getOtp();
+        String password = req.getPassword();
 
-        Authentication authentication = authenticate(username, otp);
+        Authentication authentication = authenticate(username, password);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String token = jwtProvider.generateToken(authentication);
@@ -147,22 +99,76 @@ public class AuthServiceImpl implements AuthService {
         return authResponse;
     }
 
-    private Authentication authenticate(String username, String otp) {
-        UserDetails userDetails = customUserService.loadUserByUsername(username);
+    @Override
+    public void forgotPassword(String email) throws Exception {
 
-        String SELLER_PREFIX = "seller_";
-        if(username.startsWith(SELLER_PREFIX)){
-            username=username.substring(SELLER_PREFIX.length());
+        // Check if a customer with this email exists
+        User user = userRepository.findByEmail(email);
+        // Also check sellers
+        Seller seller = sellerRepository.findByEmail(email);
+
+        if (user == null && seller == null) {
+            throw new Exception("No account found with this email address.");
         }
+
+        // Delete any existing OTP for this email
+        VerificationCode existing = verificationCodeRepository.findByEmail(email);
+        if (existing != null) {
+            verificationCodeRepository.delete(existing);
+        }
+
+        // Generate and save a fresh OTP
+        String otp = OtpUtil.generateOtp();
+        VerificationCode verificationCode = new VerificationCode();
+        verificationCode.setOtp(otp);
+        verificationCode.setEmail(email);
+        verificationCodeRepository.save(verificationCode);
+
+        // Send the OTP via email
+        String subject = "Market — Password Reset OTP";
+        String text = "Your password reset OTP is: <strong>" + otp + "</strong><br/>"
+                + "This OTP is valid for a single use. Do not share it with anyone.";
+
+        emailService.sendVerificationOtpEmail(email, otp, subject, text);
+    }
+
+    @Override
+    public void resetPassword(String email, String otp, String newPassword) throws Exception {
+
+        // Validate the OTP
+        VerificationCode verificationCode = verificationCodeRepository.findByEmail(email);
+
+        if (verificationCode == null || !verificationCode.getOtp().equals(otp)) {
+            throw new Exception("Invalid or expired OTP.");
+        }
+
+        // Update password for customer
+        User user = userRepository.findByEmail(email);
+        if (user != null) {
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+        }
+
+        // Update password for seller
+        Seller seller = sellerRepository.findByEmail(email);
+        if (seller != null) {
+            seller.setPassword(passwordEncoder.encode(newPassword));
+            sellerRepository.save(seller);
+        }
+
+        // Invalidate the OTP after successful reset
+        verificationCodeRepository.delete(verificationCode);
+    }
+
+    private Authentication authenticate(String username, String password) {
+        UserDetails userDetails = customUserService.loadUserByUsername(username);
 
         if (userDetails == null) {
             throw new BadCredentialsException("Invalid username or password");
         }
 
-        VerificationCode verificationCode = verificationCodeRepository.findByEmail(username);
-
-        if (verificationCode == null || !verificationCode.getOtp().equals(otp)) {
-            throw new BadCredentialsException("Invalid otp...");
+        if (!passwordEncoder.matches(password, userDetails.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
         }
 
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
